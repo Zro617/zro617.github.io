@@ -57,43 +57,43 @@ ScratchAPI.checkUser = function(u,cb) {
 };
 ScratchAPI.getProjectNames = function(u,cb) {
 	var projects = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.projects,1,projects,ScratchAPI._processNames,function(){cb(projects)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.projects,1,projects,ScratchAPI._processNames,function(){cb(projects)});
 };
 ScratchAPI.getFavoriteProjectNames = function(u,cb) {
 	var projects = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.favorites,1,projects,ScratchAPI._processNames,function(){cb(projects)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.favorites,1,projects,ScratchAPI._processNames,function(){cb(projects)});
 };
 ScratchAPI.getStudioCuratingNames = function(u,cb) {
 	var studios = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.studios,1,studios,ScratchAPI._processNames,function(){cb(studios)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.studios,1,studios,ScratchAPI._processNames,function(){cb(studios)});
 };
 ScratchAPI.getStudioFollowingNames = function(u,cb) {
 	var studios = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.studios_following,1,studios,ScratchAPI._processNames,function(){cb(studios)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.studios_following,1,studios,ScratchAPI._processNames,function(){cb(studios)});
 };
 ScratchAPI.getFollowerNames = function(u,cb) {
 	var followers = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.followers,1,followers,ScratchAPI._processNames,function(){cb(followers)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.followers,1,followers,ScratchAPI._processNames,function(){cb(followers)});
 };
 ScratchAPI.getFollowingNames = function(u,cb) {
 	var following = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.following,1,following,ScratchAPI._processNames,function(){cb(following)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.following,1,following,ScratchAPI._processNames,function(){cb(following)});
 };
 ScratchAPI.getProjectIds = function(u,cb) {
 	var projects = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.projects,1,projects,ScratchAPI._processIds,function(){cb(projects)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.projects,1,projects,ScratchAPI._processIds,function(){cb(projects)});
 };
 ScratchAPI.getFavoriteIds = function(u,cb) {
 	var projects = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.favorites,1,projects,ScratchAPI._processIds,function(){cb(projects)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.favorites,1,projects,ScratchAPI._processIds,function(){cb(projects)});
 };
 ScratchAPI.getStudioCuratingIds = function(u,cb) {
 	var studios = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.studios,1,studios,ScratchAPI._processIds,function(){cb(studios)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.studios,1,studios,ScratchAPI._processIds,function(){cb(studios)});
 };
 ScratchAPI.getStudioFollowingIds = function(u,cb) {
 	var studios = [];
-	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.user+u+ScratchAPI.links.studios_following,1,studios,ScratchAPI._processIds,function(){cb(studios)});
+	ScratchAPI._getPage(ScratchAPI.protocol+ScratchAPI.host+ScratchAPI.links.users+u+ScratchAPI.links.studios_following,1,studios,ScratchAPI._processIds,function(){cb(studios)});
 };
 ScratchAPI.getProjectStudioIds = function(p,cb) {
 	var studios = [];
