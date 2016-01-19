@@ -1,53 +1,60 @@
 a {
-  
+  color:#080; /* blue links are so overrated, green ftw */
+  text-decoration:none;
+}
+a:hover {
+  color:#0d0;
 }
 abbr {
-  
+  cursor:help;
+  text-decoration: dotted underline;
 }
 address {
-  
-}
-area {
-  
+  cursor:pointer;
+  font-size: 12px;
+  font-family: "Times New Roman", Times;
 }
 article {
-  
+  cursor:auto;
 }
 aside {
-  
+  cursor:auto;
 }
 b {
-  
-}
-base {
-  
-}
-bdi {
-  
-}
-bdo {
-  
+  cursor:auto;
+  font-size: 20px;
 }
 blockquote {
-  
+  cursor:auto;
+  font-style: italic;
+  color: #555;
+  padding: 20px;
 }
 body {
-  
+  cursor:auto;
 }
 button {
+  cursor:pointer;
+  border-radius:4px;
+  -moz-border-radius:4px;
+  -webkit-border-radius:4px;
+}
+button:hover {
   
 }
 canvas {
-  
+  cursor:crosshair;
 }
 caption {
-  
+  cursor:help;
+  font-style: italic;
 }
 cite {
-  
+  cursor:help;
+  font-style: italic;
 }
 code {
-  
+  font-family: "Consolas","Courier New",monospace;
 }
 col {
   
@@ -65,16 +72,16 @@ del {
   
 }
 details {
-  
+  /* Not implemented in FF or Edge yet */
 }
 dfn {
-  
+  font-style: bold;
 }
 dialog {
-  
+  /* NOt implemented in FF or Edge yet */
 }
 div {
-  
+  padding: 10px;
 }
 dl {
   
@@ -83,21 +90,25 @@ dt {
   
 }
 em {
-  
+  font-style: bold italic underline;
 }
-embed {
-  
+em.warning {
+  color: #F00;
 }
 fieldset {
-  
+  margin-right: 5px;
+  margin-left: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 figcaption {
-  
+  cursor:help;
 }
 figure {
   
 }
 footer {
+  cursor:auto;
   text-align: center;
   display: inline;
   background-color: #efefef;
@@ -110,7 +121,7 @@ footer {
   font-size: 12px;
 }
 form {
-  
+  padding: 5px;
 }
 h1 {
   text-align: center;
@@ -122,7 +133,8 @@ h2 {
   font-size: 24px;
 }
 h3 {
-  
+  text-align: center;
+  font-size: 18px;
 }
 h4 {
   
@@ -131,9 +143,6 @@ h5 {
   
 }
 h6 {
-  
-}
-head {
   
 }
 header {
@@ -150,7 +159,7 @@ header {
   font-size: 12px;
 }
 hr {
-  
+  margin: 20px;
 }
 html {
   font-family: "Comic Sans MS", Arial, sans;
@@ -165,8 +174,20 @@ iframe {
 img {
   
 }
+img.large-thumbnail {
+  width: 240px;
+  height: 180px;
+}
+img.thumbnail {
+  width: 120px;
+  height: 90px;
+}
+img.small-thumbnail {
+  width: 80px;
+  height: 60px;
+}
 input {
-  
+  font-family: "Showcard Gothic","Cooper Black","Comic Sans MS",Arial; /* lol sorry not sorry */
 }
 input[type=text] {
   
@@ -178,10 +199,10 @@ input[type=radio] {
   
 }
 input[type=submit] {
-  
+  font-family: "Segoe UI Light",Arial,sans-serif;
 }
 ins {
-  
+  font-style: underline;
 }
 kbd {
   
