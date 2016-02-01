@@ -38,6 +38,12 @@ ScratchAPI.links = {
 ScratchAPI.csrf = function() {
   return document.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1];
 };
+ScratchAPI.userId = function() {
+	return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.id : prompt("Please enter your Scratch ID"); // TODO: Retrieve user ID from username via XHR
+};
+ScratchAPI.username = function() {
+	return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.username : prompt("Please enter your Scratch username");
+};
 ScratchAPI._processIds = function(dom,acc) {
 	for(var _=dom.querySelectorAll("span.title"),i=0;i<_.length;i++)
 		acc.push(_[i].getElementsByTagName("a")[0].href.match(/\d+/)[0]);
