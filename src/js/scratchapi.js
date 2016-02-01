@@ -35,6 +35,9 @@ ScratchAPI.links = {
 	api_user:          "/api/v1/user/",
 	api_project:       "/api/v1/project/"
 };
+ScratchAPI.csrf = function() {
+  return document.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1];
+};
 ScratchAPI._processIds = function(dom,acc) {
 	for(var _=dom.querySelectorAll("span.title"),i=0;i<_.length;i++)
 		acc.push(_[i].getElementsByTagName("a")[0].href.match(/\d+/)[0]);
