@@ -107,7 +107,8 @@ var ScratchAPI = {
 			},
 			remixes: {
 				get: ["GET","/projects/<project>/remixes/"],
-				remixtree: ["GET","/projects/<project>/remixtree/bare/"]
+				remixtree: ["GET","/projects/<project>/remixtree/bare/"],
+				remix: ["GET","/project/<project>/remix/"] // might not be right
 			},
 			studios: {
 				get: ["GET","/projects/<project>/studios/?page=<page>"],
@@ -118,6 +119,9 @@ var ScratchAPI = {
 				get: ["GET","/site-api/comments/project/<project>/?page=<page>"],
 				add: ["POST","/site-api/comments/project/<project>/add/"]
 			},
+			share: ["","/projects/<project>/share/"],
+			unshare: ["","/projects/<project>/unshare/"],
+			trash: ["","/"],
 			report: ["","/"]
 		},
 		studios: {
@@ -137,7 +141,7 @@ var ScratchAPI = {
 				get: ["GET","/site-api/users/owners-in/<studio>/<page>"],
 				demote: ["","/"], // :(
 				remove: ["PUT",""]
-			}
+			},
 			comments: {
 				get: ["GET","/site-api/comments/gallery/<studio>/?page=<page>"],
 				add: ["POST","/site-api/comments/gallery/<studio>/add/"]
@@ -188,10 +192,10 @@ var ScratchAPI = {
 		},
 		get_sessionid: function() {
 			return Scratch ? document.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1] : ScratchAPI.session.login().session;
-		}
+		},
 		get_user_model: function() {
 			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model : { error: "not logged in" };
-		}
+		},
 		get_user_id: function() {
 			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.id : prompt("Please enter your Scratch ID"); // TODO: Retrieve user ID from username via XHR
 		},
@@ -237,7 +241,7 @@ var ScratchAPI = {
 		get_page_elements: function(dom,acc) {
 			for(var _=dom.querySelectorAll("li"),i=0;i<_.length;i++)
 				acc.push(_[i]);
-		}
+		},
 		get_all_pages: function(req,args,cb,exit) {
 			function next(pg) {
 				args.page = pg || 1;
@@ -268,14 +272,22 @@ var ScratchAPI = {
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.users.get,args);
 			},
-			get_api: function(u,cb) {
+			get_properties: function(u,cb) {
 				var args = {
 					username: u,
 					success: function(x) { cb(x) },
 					fail: function(x) { cb(null) }
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.users.api,args);
-			}
+			},
+			get_backpack: function(u,cb) {
+				var args = {
+					username: u,
+					success: function(x) { cb(x) },
+					fail: function(x) { cb(null) }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.users.backpack,args);
+			},
 			get_project_names: function(u,cb) {
 				var projects = [];
 				var args = { username: u };
@@ -346,12 +358,38 @@ var ScratchAPI = {
 				function(x) { ScratchAPI.auxiliary.get_page_ids(x,users) },
 				function(x) { cb(users) });
 			},
+			follow: function(u,cb) {
+				var args = {
+					username: ScratchAPI.session.get_username,
+					targetusername: u
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.users.following.add,args);
+			},
+			unfollow: function(u,cb) {
+				var args = {
+					username: ScratchAPI.session.get_username,
+					targetusername: u
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.users.following.remove,args);
+			},
 			get_comments: function(u,cb) {
 				var comments = [];
 				var args = { username: u };
 				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.users.comments.get,args,
 				function(x) { ScratchAPI.auxiliary.get_page_elements(x,comments) },
 				function(x) { cb(comments) });
+			},
+			comment: function(u,c,cb) {
+				var args = {
+					username: u,
+					body: {
+						content: c,
+						parent_id: "",
+						commentee_id: ""
+					},
+					success: cb
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.users.comments.add,args);
 			}
 		},
 		projects: {
@@ -372,13 +410,41 @@ var ScratchAPI = {
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.projects.get,args);
 			},
-			get_api: function(p,cb) {
+			get_properties: function(p,cb) {
 				var args = {
 					project: p,
 					success: function(x) { cb(x) },
 					fail: function(x) { cb(null) }
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.projects.api,args);
+			},
+			love: function(p,cb) {
+				var args = {
+					project: p,
+					success: cb
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.projects.loveits.add,args);
+			},
+			unlove: function(p,cb) {
+				var args = {
+					project: p,
+					success: cb
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.projects.loveits.remove,args);
+			},
+			favorite: function(p,cb) {
+				var args = {
+					project: p,
+					success: cb
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.projects.favorites.add,args);
+			},
+			unfavorite: function(p,cb) {
+				var args = {
+					project: p,
+					success: cb
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.projects.favorites.remove,args);
 			}
 			get_studio_names: function(p,cb) {
 				var studios = [];
@@ -394,12 +460,24 @@ var ScratchAPI = {
 				function(x) { ScratchAPI.auxiliary.get_page_ids(x,studios) },
 				function(x) { cb(studios) });
 			},
-			get_comments: function(u,cb) {
+			get_comments: function(p,cb) {
 				var comments = [];
-				var args = { username: u };
+				var args = { project: p };
 				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.projects.comments.get,args,
 				function(x) { ScratchAPI.auxiliary.get_page_elements(x,comments) },
 				function(x) { cb(comments) });
+			},
+			comment: function(p,c,cb) {
+				var args = {
+					project: p,
+					body: {
+						content: c,
+						parent_id: "",
+						commentee_id: ""
+					},
+					success: cb
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.projects.comments.add,args);
 			}
 		},
 		studios: {
