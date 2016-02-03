@@ -84,7 +84,10 @@ div {
   padding: 10px;
 }
 div.pagewrapper {
-  margin: auto;
+  margin-left: 150px;
+  margin-right: 150px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 dl {
   
@@ -117,6 +120,7 @@ footer {
   background-color: #efefef;
   position: fixed;
   padding: 20px;
+  margin-left: 150px;
   left: 0px;
   bottom: 0px;
   width: 100%;
