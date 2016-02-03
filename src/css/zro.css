@@ -83,6 +83,9 @@ dialog {
 div {
   padding: 10px;
 }
+div.pagewrapper {
+  margin: auto;
+}
 dl {
   
 }
