@@ -84,7 +84,7 @@ div {
   padding: 10px;
 }
 div.pagewrapper {
-  margin-left: 190px;
+  margin-left: 200px;
   padding: 20px;
 }
 dl {
@@ -291,7 +291,8 @@ small {
   
 }
 span {
-  
+  display: block;
+  margin: 5px;
 }
 strong {
   
