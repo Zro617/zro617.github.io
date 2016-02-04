@@ -78,14 +78,14 @@ dfn {
   font-style: bold;
 }
 dialog {
-  /* NOt implemented in FF or Edge yet */
+  /* Not implemented in FF or Edge yet */
 }
 div {
   padding: 10px;
 }
 div.pagewrapper {
   margin-left: 200px;
-  margin-bottom: 200px;
+  margin-bottom: 100px;
   padding: 20px;
 }
 dl {
@@ -96,9 +96,6 @@ dt {
 }
 em {
   font-style: bold italic underline;
-}
-em.warning {
-  color: #F00;
 }
 fieldset {
   margin-right: 5px;
@@ -168,11 +165,9 @@ hr {
   margin: 20px;
 }
 html {
-  font-family: "Comic Sans MS", Arial, sans;
+  font-familly: "Segoe UI Light", Arial, sans-serif;
+  /* font-family: "Comic Sans MS", Arial, sans; */
   font-size: 18px;
-}
-i {
-  
 }
 iframe {
   
@@ -349,6 +344,60 @@ var {
 video {
   
 }
+.textleft {
+  text-align: left;
+}
+.textright {
+  text-align: right;
+}
+.textcentered {
+  text-align: center;
+}
+.bolded {
+  font-style: bold;
+}
+.italicized {
+  font-style: italic;
+}
+.underlined {
+  text-decoration: underline;
+}
+.widekerning {
+  letter-spacing: 0.4em;
+}
+.fixed {
+  position: fixed;
+}
+.block {
+  display: block;
+}
+.pointer {
+  cursor: pointer;
+}
+.help {
+  cursor: help;
+}
+.black {
+  color: black;
+}
+.darkdarkgray {
+  color: #222;
+}
+.darkgray {
+  color: #555;
+}
+.gray {
+  color: gray;
+}
+.lightgray {
+  color: #aaa;
+}
+.lightlightgray {
+  color: #ddd;
+}
+.white {
+  color: white;
+}
 .smallcaps {
   font-variant: small-caps;
 }
@@ -360,4 +409,7 @@ video {
 }
 .nodot {
   list-style: none;
+}
+.warning {
+  color: #F00;
 }
