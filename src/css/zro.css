@@ -165,7 +165,7 @@ hr {
   margin: 20px;
 }
 html {
-  font-familly: "Segoe UI Light", Arial, sans-serif;
+  font-familly: "Segoe UI", Arial, sans-serif;
   /* font-family: "Comic Sans MS", Arial, sans; */
   font-size: 18px;
 }
@@ -200,7 +200,7 @@ input[type=radio] {
   
 }
 input[type=submit] {
-  font-family: "Segoe UI Light",Arial,sans-serif;
+  font-family: "Segoe UI",Arial,sans-serif;
 }
 ins {
   font-style: underline;
@@ -218,7 +218,8 @@ legend {
   
 }
 li {
-  
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 link {
   
