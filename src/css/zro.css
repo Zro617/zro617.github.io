@@ -349,3 +349,15 @@ var {
 video {
   
 }
+.smallcaps {
+  font-variant: small-caps;
+}
+.allcaps {
+  text-transform: uppercase;
+}
+.ln {
+  display: inline;
+}
+.nodot {
+  list-style: none;
+}
