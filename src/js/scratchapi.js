@@ -78,7 +78,7 @@ var ScratchAPI = {
 				get: ["GET","/internalapi/backpack/<username>/get/"]
 			},
 			projects: ["GET","/users/<username>/projects/?page=<page>"],
-			favorites: "GET","/users/<username>/favorites/?page=<page>"],
+			favorites: ["GET","/users/<username>/favorites/?page=<page>"],
 			studios: ["GET","/users/<username>/studios/?page=<page>"],
 			studios_following: ["GET","/users/<username>/studios_following/?page=<page>"],
 			following: {
@@ -178,7 +178,7 @@ var ScratchAPI = {
 				xhr.open("GET","https://scratch.mit.edu/login/",false);
 				xhr.onload = function() {
 					if (this.status==200)
-						s = this.response.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1];
+						s = this.response.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1],
 						c = this.response.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1];
 					else
 						alert("Login failed");
@@ -207,7 +207,7 @@ var ScratchAPI = {
 		}
 	},
 	request: function(req,args) {
-		var type = req[0], url = this.protocol+this.host+req[1], params = req[1].match(/<(.*)>/g);
+		var type = req[0], url = this.protocol+this.host+req[1], params = req[1].match(/<(\w+)>/g);
 		console.log("URL (before): "+url);
 		if (args && params.length)
 			for (var e=0;e<params.length;e++)
@@ -218,11 +218,11 @@ var ScratchAPI = {
 		if (type=="PUT"||type=="POST")xhr.setRequestHeader("X-CSRFToken",this.session.get_csrf());
 		xhr.onload = function() {
 			if (this.status==200) {
-				if (args.success) { args.success(this.response); }
-				else { console.log("SUCCESS"); }
+				if (args.success) args.success(this.response);
+				else console.log("SUCCESS");
 			} else {
-				if (args.fail) { args.fail(this.response); }
-				else { console.log("FAIL"); }
+				if (args.fail) args.fail(this.response);
+				else console.log("FAIL");
 			}
 		};
 		xhr.send(args.body?JSON.stringify(args.body):null);
