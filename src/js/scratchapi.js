@@ -165,7 +165,7 @@ var ScratchAPI = {
 				goto: ["GET","/discuss/post/<post>/"],
 				add: ["POST","/discuss/topic/<topic>/add/"],
 				edit: ["POST","/discuss/post/<post>/edit/"],
-				report: ["","/"]
+				report: ["POST","/discuss/misc/?action=report&post_id=<post>"] // this goes to the report page, not the report API
 			},
 			signature: ["GET","/discuss/<username>/settings/"]
 		}
@@ -211,7 +211,7 @@ var ScratchAPI = {
 		console.log("URL (before): "+url);
 		if (args && params.length)
 			for (var e=0;e<params.length;e++)
-				url=url.replace("<"+params[e]+">",args[params[e]]);
+				url=url.replace("<"+params[e]+">",args[params[e]] || 1);
 		console.log("URL (after):  "+url);
 		var xhr = new XMLHttpRequest();
 		xhr.open(type,url,true);
@@ -798,7 +798,79 @@ var ScratchAPI = {
 					},
 					success: cb
 				};
-				Scratch.request(Scratch.hrefs.studios.comments.add,args);
+				ScratchAPI.request(ScratchAPI.hrefs.studios.comments.add,args);
+			}
+		},
+		discuss: {
+			test_forum: function(f,cb) {
+				cb = cb || console.log;
+				var args = {
+					forum: f,
+					success: function() { cb(true) },
+					fail: function() { cb(false) }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.discuss.get_forum,args);
+			},
+			test_topic: function(t,cb) {
+				cb = cb || console.log;
+				var args = {
+					topic: t,
+					success: function() { cb(true) },
+					fail: function() { cb(false) }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.discuss.topics.get,args);
+			},
+			test_post: function(p,cb) {
+				cb = cb || console.log;
+				var args = {
+					post: p,
+					success: function() { cb(true) },
+					fail: function() { cb(false) }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.discuss.posts.get,args);
+			},
+			add_topic: function(f,title,post,cb) {
+				if (!title) return alert("ERROR: New topic call requires title (second param)");
+				if (!post)  return alert("ERROR: New topic call requires post body (third param)");
+				var args = {
+					forum: f,
+					success: function(x) {
+						// a crude way to create a topic
+						x.querySelector("input#id_name").value = title;
+						x.querySelector("textarea#id_body").value = post;
+						x.querySelector("button").click();
+						if (cb) cb(true);
+					},
+					fail: function(x) { cb(false) }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.discuss.topics.add,args);
+			},
+			add_post: function(t,post,cb) {
+				if (!post) return alert("ERROR: New post call requires post body (second param)");
+				var args = {
+					topic: t,
+					page: 1,
+					success: function(x) {
+						x.querySelector("textarea").value = post;
+						x.querySelector("button[name=AddPostForm]").click();
+						cb(true);
+					},
+					fail: function(x) { cb(false) }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.discuss.topics.get,args);
+			},
+			report: function(p,r,cb) {
+				if (!r) return alert("ERROR: Report call requires a reason for reporting");
+				var args = {
+					post: p,
+					success: function(x) {
+						x.querySelector("textarea").value = r;
+						x.querySelector("button").click();
+						cb(true);
+					},
+					fail: function(x) { cb(false); }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.discuss.posts.report,args);
 			}
 		}
 	}
