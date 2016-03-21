@@ -46,6 +46,7 @@
 */
 
 var ScratchAPI = {
+	async: true,
 	protocol: "https://",
 	host: "scratch.mit.edu",
 	domains: {
@@ -214,7 +215,7 @@ var ScratchAPI = {
 				url=url.replace("<"+params[e]+">",args[params[e]] || 1);
 		console.log("URL (after):  "+url);
 		var xhr = new XMLHttpRequest();
-		xhr.open(type,url,true);
+		xhr.open(type,url,this.async);
 		if (type=="PUT"||type=="POST")xhr.setRequestHeader("X-CSRFToken",this.session.get_csrf());
 		xhr.onload = function() {
 			if (this.status==200) {
