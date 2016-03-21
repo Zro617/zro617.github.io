@@ -47,6 +47,12 @@
 
 var ScratchAPI = {
 	async: true,
+	credentials: {
+		username: "",
+		password: "",
+		csrf: "",
+		session: ""
+	},
 	protocol: "https://",
 	host: "scratch.mit.edu",
 	domains: {
@@ -172,8 +178,10 @@ var ScratchAPI = {
 		}
 	},
 	session: {
-		login: function() {
-			var u = prompt("Username"), p = prompt("Password"), c = s = "";
+		login: function(u,p) {
+			u || (u = prompt("Username"));
+			p || (p = prompt("Password"));
+			var c = "", s = "";
 			if (u && p) {
 				var xhr = new XMLHttpRequest();
 				xhr.open("GET","https://scratch.mit.edu/login/",false);
@@ -186,13 +194,25 @@ var ScratchAPI = {
 				};
 				xhr.send(JSON.stringify({username:u,password:p}));
 			}
+			// Update credentials
+			ScratchAPI.credentials.username = u;
+			ScratchAPI.credentials.password = p;
+			ScratchAPI.credentials.csrf = c;
+			ScratcHAPI.credentials.session = s;
+			
 			return { csrf:c,session:s };
 		},
+		logout: function() {
+			ScratchAPI.credentials.username = "";
+			ScratchAPI.credentials.password = "";
+			ScratchAPI.credentials.csrf = "";
+			ScratchAPI.credentials.session = "";
+		},
 		get_csrf: function() {
-			return Scratch ? document.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1] : ScratchAPI.session.login().csrf;
+			return Scratch ? document.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1] : (ScratchAPI.credentials.csrf || ScratchAPI.session.login().csrf);
 		},
 		get_sessionid: function() {
-			return Scratch ? document.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1] : ScratchAPI.session.login().session;
+			return Scratch ? document.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1] : (ScratchAPI.credentials.session || ScratchAPI.session.login().session);
 		},
 		get_user_model: function() {
 			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model : { error: "not logged in" };
@@ -201,19 +221,19 @@ var ScratchAPI = {
 			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.id : prompt("Please enter your Scratch ID"); // TODO: Retrieve user ID from username via XHR
 		},
 		get_username: function() {
-			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.username : prompt("Please enter your Scratch username");
+			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.username : (ScratchAPI.credentials.username || (ScratchAPI.credentials.username = prompt("Username pls"));
 		},
 		get_password: function() {
-			return alert("hahahahaha so funny");
+			return ScratchAPI.credentials.password || (ScratchAPI.credentials.password = prompt("Password pls"));
 		}
 	},
 	request: function(req,args) {
 		var type = req[0], url = this.protocol+this.host+req[1], params = req[1].match(/<(\w+)>/g);
-		console.log("URL (before): "+url);
+		//console.log("URL (before): "+url);
 		if (args && params.length)
 			for (var e=0;e<params.length;e++)
 				url=url.replace("<"+params[e]+">",args[params[e]] || 1);
-		console.log("URL (after):  "+url);
+		//console.log("URL (after):  "+url);
 		var xhr = new XMLHttpRequest();
 		xhr.open(type,url,this.async);
 		if (type=="PUT"||type=="POST")xhr.setRequestHeader("X-CSRFToken",this.session.get_csrf());
@@ -230,10 +250,18 @@ var ScratchAPI = {
 	},
 	auxiliary: {
 		get_page_ids: function(dom,acc) {
-			for(var _=dom.querySelectorAll("span.title"),i=0;i<_.length;i++)acc.push(_[i].getElementsByTagName("a")[0].href.match(/\d+/)[0]);
+			for(var _=dom.querySelectorAll("span.title"),i=0;i<_.length;i++)
+				acc.push(_[i].getElementsByTagName("a")[0].href.match(/\d+/)[0]);
 		},
 		get_page_names: function(dom,acc) {
-			for(var _=dom.querySelectorAll("span.title"),i=0;i<_.length;i++)acc.push(_[i].getElementsByTagName("a")[0].innerHTML.trim());
+			for(var _=dom.querySelectorAll("span.title"),i=0;i<_.length;i++)
+				acc.push(_[i].getElementsByTagName("a")[0].innerHTML.trim());
+		},
+		get_page_ids_and_names: function(dom,acc) {
+			for(var _=dom.querySelectorAll("span.title"),i=0,a;i<_.length;i++){
+				a = _[i].getElementsByTagName("a")[0];
+				acc.push({id:a.href.match(/\d+/)[0],name:a.innerHTML.trim()});
+			}
 		},
 		get_page_elements: function(dom,acc) {
 			for(var _=dom.querySelectorAll("li"),i=0;i<_.length;i++)acc.push(_[i]);
