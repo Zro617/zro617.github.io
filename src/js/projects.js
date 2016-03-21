@@ -12,7 +12,7 @@
             img["class"] = "thumbnail";
             img["src"] = img["data-original"];
             img["data-original"] = "";
-            proj.removeChild(querySelector("span.owner"));
+            proj.removeChild(proj.querySelector("span.owner"));
             projects_out.appendChild(proj);
           }
     }
