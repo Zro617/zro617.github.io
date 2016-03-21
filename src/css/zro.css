@@ -187,19 +187,18 @@ img.small-thumbnail {
   height: 60px;
 }
 input {
-  font-family: "Showcard Gothic","Cooper Black","Comic Sans MS",Arial; /* lol sorry not sorry */
+  font-family: "Segoe UI",Arial,sans-serif;
 }
-input[type=text] {
-  
+input[type=text], input[type=password] {
+  text-align: center;
+  width: 90%;
+  left: 10%;
 }
 input[type=checkbox] {
   
 }
 input[type=radio] {
   
-}
-input[type=submit] {
-  font-family: "Segoe UI",Arial,sans-serif;
 }
 ins {
   font-style: underline;
