@@ -9,7 +9,7 @@
           for(i=0;i<projects_in.length;i++){
             proj = projects_in[i];
             a = proj.querySelectorAll("a");
-            for (_ in a) a[_].setAttribute("href","//scratch.mit.edu"+a[_].getAttribute("href")));
+            for (_ in a) a[_].setAttribute("href","//scratch.mit.edu"+a[_].getAttribute("href"));
             img = proj.querySelector("img");
             img.setAttribute("class","thumbnail");
             img.setAttribute("src",img.getAttribute("data-original"));
