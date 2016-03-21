@@ -1,4 +1,4 @@
-function(){
+(function(){
   var xhr = new XMLHttpRequest();
   xhr.open("GET","https://scratch.mit.edu/site-api/projects/in/1000000/1/",true);
   xhr.responseType = "document";
