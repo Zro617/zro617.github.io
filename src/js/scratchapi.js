@@ -238,7 +238,7 @@ var ScratchAPI = {
 	},
 	request: function(req,args,async) {
 		var type = req[0], url = this.protocol+this.host+req[1], params = req[1].match(/<(\w+)>/g);
-		if (args && params.length)
+		if (args && params && params.length)
 			for (var e=0;e<params.length;e++)
 				url=url.replace("<"+params[e]+">",args[params[e]] || 1);
 		
@@ -333,6 +333,23 @@ var ScratchAPI = {
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.users.backpack,args);
 			},
+			get_projects: function(u,cb) {
+				var projects = [];
+				var args = { username: u };
+				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.users.projects,args,
+				function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects) },
+				function(x) { cb(projects) });
+			},
+			get_page_of_projects: function(u,p,cb) {
+				var projects = [];
+				var args = {
+					username: u,
+					page: p,
+					success: function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects);cb(projects) },
+					fail: function(x) { cb(null) }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.users.projects,args);
+			},
 			get_project_names: function(u,cb) {
 				var projects = [];
 				var args = { username: u };
@@ -366,6 +383,23 @@ var ScratchAPI = {
 					fail: function(x) { cb(null) }
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.users.projects,args);
+			},
+			get_favorites: function(u,cb) {
+				var projects = [];
+				var args = { username: u };
+				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.users.favorites,args,
+				function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects) },
+				function(x) { cb(projects) });
+			},
+			get_page_of_favorites: function(u,p,cb) {
+				var projects = [];
+				var args = {
+					username: u,
+					page: p,
+					success: function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects);cb(projects) },
+					fail: function(x) { cb(null) }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.users.favorites,args);
 			},
 			get_favorite_names: function(u,cb) {
 				var projects = [];
@@ -597,10 +631,17 @@ var ScratchAPI = {
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.projects.remixes.remixtree,args);
 			},
+			get_studios: function(p,cb) {
+				var studios = [];
+				var args = { project: p };
+				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.projects.studios.get,args,
+				function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,studios) },
+				function(x) { cb(projects) });
+			},
 			get_studio_names: function(p,cb) {
 				var studios = [];
 				var args = { project: p };
-				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.projects.studios,args,
+				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.projects.studios.get,args,
 				function(x) { ScratchAPI.auxiliary.get_page_names(x,studios) },
 				function(x) { cb(studios) });
 			},
@@ -617,7 +658,7 @@ var ScratchAPI = {
 			get_studio_ids: function(p,cb) {
 				var studios = [];
 				var args = { project: p };
-				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.projects.studios,args,
+				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.projects.studios.get,args,
 				function(x) { ScratchAPI.auxiliary.get_page_ids(x,studios) },
 				function(x) { cb(studios) });
 			},
