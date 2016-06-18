@@ -295,7 +295,7 @@ var ScratchAPI = {
 				args.page = pg || 1; ScratchAPI.request(req,args);
 			}
 			args.success = function(x) { cb(x); next(args.page+1); };
-			args.fail = args.fail || exit;
+			args.fail = args.fail || exit || console.log;
 			//args.body = args.body || {};
 			next();
 		}
@@ -340,7 +340,7 @@ var ScratchAPI = {
 				var args = { username: u };
 				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.users.projects,args,
 				function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects) },
-				function(x) { cb(projects) });
+				function(x) { cb?cb(projects):console.log(projects) });
 			},
 			get_page_of_projects: function(u,p,cb) {
 				var projects = [];
@@ -628,51 +628,58 @@ var ScratchAPI = {
 			get_remixtree: function(p,cb) {
 				var args = {
 					project: p,
-					success: function(x) { cb(x) },
-					fail: function(x) { cb(null) }
+					success: cb,
+					fail: function() { cb(null) }
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.projects.remixes.remixtree,args);
 			},
 			get_studios: function(p,cb) {
 				var studios = [];
-				var args = { project: p };
-				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.projects.studios.get,args,
-				function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,studios) },
-				function(x) { cb(projects) });
+				var args = {
+					project: p,
+					success: function(x) {
+						ScratchAPI.auxiliary.get_page_ids_and_names(x,studios);
+						cb(studios);
+					},
+					fail: function() { cb(studios) }
+				};
+				ScratchAPI.request(ScratchAPI.hrefs.projects.studios.get,args);
+			},
+			get_page_of_studios: function(p,pg,cb) {
+				console.warning("This method is deprecated. Use get_studios() instead.");
+				ScratchAPI.main.projects.get_studios(p,cb);
 			},
 			get_studio_names: function(p,cb) {
 				var studios = [];
-				var args = { project: p };
-				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.projects.studios.get,args,
-				function(x) { ScratchAPI.auxiliary.get_page_names(x,studios) },
-				function(x) { cb(studios) });
-			},
-			get_page_of_studio_names: function(p,pg,cb) {
-				var studios = [];
 				var args = {
 					project: p,
-					page: pg,
-					success: function(x) { ScratchAPI.auxiliary.get_page_names(x,studios);cb(studios) },
-					fail: function(x) { cb(null) }
+					success: function(x) {
+						ScratchAPI.auxiliary.get_page_names(x,studios);
+						cb(studios);
+					},
+					fail: function() { cb(studios) }
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.projects.studios.get,args);
+			},
+			get_page_of_studio_names: function(p,pg,cb) {
+				console.warning("This method is deprecated. Use get_studio_names() instead.");
+				ScratchAPI.main.projects.get_studio_names(p,cb);
 			},
 			get_studio_ids: function(p,cb) {
 				var studios = [];
-				var args = { project: p };
-				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.projects.studios.get,args,
-				function(x) { ScratchAPI.auxiliary.get_page_ids(x,studios) },
-				function(x) { cb(studios) });
-			},
-			get_page_of_studio_ids: function(p,pg,cb) {
-				var studios = [];
 				var args = {
 					project: p,
-					page: pg,
-					success: function(x) { ScratchAPI.auxiliary.get_page_ids(x,studios);cb(studios) },
-					fail: function(x) { cb(null) }
+					success: function(x) {
+						ScratchAPI.auxiliary.get_page_ids(x,studios);
+						cb(studios);
+					},
+					fail: function() { cb(studios) }
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.projects.studios.get,args);
+			},
+			get_page_of_studio_ids: function(p,pg,cb) {
+				console.warning("This method is deprecated. Use get_studio_ids() instead.");
+				ScratchAPI.main.projects.get_studio_ids(p,cb);
 			},
 			get_comments: function(p,cb) {
 				var comments = [];
