@@ -249,7 +249,7 @@ var ScratchAPI = {
 		
 		this.headers["Content-Length"] = body.length;
 		if (type=="PUT"||type=="POST") {
-			this.headers["X-CSRFToken"] = this.session.get_csrf());
+			this.headers["X-CSRFToken"] = this.session.get_csrf();
 			this.headers["Cookie"] = "scratchlanguage=en;"
 			+"scratchcsrftoken="+this.session.get_csrf()+";"
 			+"scratchsessionid="+this.session.get_sessionid()+";";
