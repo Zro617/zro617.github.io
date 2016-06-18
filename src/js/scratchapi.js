@@ -240,7 +240,7 @@ var ScratchAPI = {
 		var type = req[0], url = this.protocol+this.host+req[1], params = req[1].match(/<(\w+)>/g);
 		if (args && params && params.length)
 			for (var e=0;e<params.length;e++)
-				url=url.replace(params[e],args[params[e].substring(1,params[e].length-2)] || 1);
+				url=url.replace(params[e],args[params[e].substring(1,params[e].length-1)] || 1);
 		
 		var body = args.body?JSON.stringify(args.body):"";
 		
