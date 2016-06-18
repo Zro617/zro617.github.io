@@ -274,17 +274,21 @@ var ScratchAPI = {
 	},
 	auxiliary: {
 		get_page_ids: function(dom,acc) {
-			for(var _=dom.querySelectorAll("span.title"),i=0;i<_.length;i++)
-				acc.push(_[i].getElementsByTagName("a")[0].href.match(/\d+/)[0]);
+			for(var _=dom.querySelectorAll("span.title"),i=0,x;i<_.length;i++) {
+				x = _[i].getElementsByTagName("a")[0].href.match(/\d+/g);
+				acc.push(x[x.length-1]);
+			}
+				
 		},
 		get_page_names: function(dom,acc) {
 			for(var _=dom.querySelectorAll("span.title"),i=0;i<_.length;i++)
 				acc.push(_[i].getElementsByTagName("a")[0].innerHTML.trim());
 		},
 		get_page_ids_and_names: function(dom,acc) {
-			for(var _=dom.querySelectorAll("span.title"),i=0,a;i<_.length;i++){
+			for(var _=dom.querySelectorAll("span.title"),i=0,a,x;i<_.length;i++){
 				a = _[i].getElementsByTagName("a")[0];
-				acc.push({id:a.href.match(/\d+/)[0],name:a.innerHTML.trim()});
+				x = a.href.match(/\d+/g);
+				acc.push({id:x[x.length-1],name:a.innerHTML.trim()});
 			}
 		},
 		get_page_elements: function(dom,acc) {
@@ -340,7 +344,7 @@ var ScratchAPI = {
 				var args = { username: u };
 				ScratchAPI.auxiliary.get_all_pages(ScratchAPI.hrefs.users.projects,args,
 				function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects) },
-				function(x) { cb?cb(projects):console.log(projects) });
+				function(x) { cb(projects) });
 			},
 			get_page_of_projects: function(u,p,cb) {
 				var projects = [];
