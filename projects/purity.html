@@ -267,8 +267,11 @@ function start() {
 	projects = [];
 	var username = _getu();
 	if (!username) return error("Username not set.");
-	
-	regex.set(div_init.querySelector("textarea#custom").value);
+	try {
+		regex.set(div_init.querySelector("textarea#custom").value);
+	} catch (e) {
+		return error(e.message);
+	}
 	
 	var select_msg = div_select.querySelector(".msg");
 	select_msg.innerHTML = "Fetching projects. Please wait...";
@@ -279,28 +282,37 @@ function start() {
 	//_test(5,3);
 	
 	ScratchAPI.async = false;
-	// Get all projects
-	ScratchAPI.main.users.get_projects(
+	
+	try {
+		// Get all projects
+		ScratchAPI.main.users.get_projects(
 		username,
 		function(x){
 			projects=x;
 			//console.log("Projects successfully retrieved.");
 		}
 	);
-	
+	} catch (e) {
+		return error(e.message);
+	}
+
 	if (!projects.length) return error("Couldn't find any projects...?");
 	
-	// Get all studios for each project
-	for (var p=0;p<projects.length;p++) {
-		projects[p].studios = [];
-		ScratchAPI.main.projects.get_studios(
-			projects[p].id,
-			function(x){
-				projects[p].studios=x;
-				//console.log("Studios of project "+projects[p].id+" successfully retrieved.");
-			}
+	try {
+		// Get all studios for each project
+		for (var p=0;p<projects.length;p++) {
+			projects[p].studios = [];
+			ScratchAPI.main.projects.get_studios(
+				projects[p].id,
+				function(x){
+					projects[p].studios=x;
+					//console.log("Studios of project "+projects[p].id+" successfully retrieved.");
+				}
 		);
 		select_msg.innerHTML = "Fetching studios. Please wait... ("+(p+1)+"/"+projects.length+")";
+	}
+	} catch (e) {
+		return error(e.message);
 	}
 	
 	if (_getms()) {
@@ -399,23 +411,25 @@ function finish() {
 	_hide(div_almost);
 	_clear(pre_log);
 	if (_getp()) {
-		ScratchAPI.session.login(_getu(),_getp());
-		var p,s;
-		for (p=0;p<projects.length;p++) {
-			var p_name = projects[p].name;
-			var p_id = projects[p].id;
-			var p_studios = projects[p].studios;
-			for (s=0;s<p_studios.length;s++) {
-				var s_name = p_studios[s].name;
-				var s_id = p_studios[s].id;
-				ScratchAPI.main.projects.remove_from_studio(
-					p_id,
-					s_id,
+		try {
+			ScratchAPI.session.login(_getu(),_getp());
+			var p,s;
+			for (p=0;p<projects.length;p++) {
+				var p_name = projects[p].name;
+				var p_id = projects[p].id;
+				var p_studios = projects[p].studios;
+				for (s=0;s<p_studios.length;s++) {
+					var s_name = p_studios[s].name;
+					var s_id = p_studios[s].id;
+					ScratchAPI.main.projects.remove_from_studio(p_id,s_id,
 					function(x) {
 						pre_log.innerHTML += '"'+p_name+'" is no longer in "'+s_name+'".<br>';
 					}
-				);
+					);
+				}
 			}
+		} catch (e) {
+			return error(e.message);
 		}
 		
 		for(p=0,s=0;p<projects.length;p++)s+=projects[p].studios.length;
