@@ -127,7 +127,7 @@
 		<div class="title">
 			<h1>purity</h1>
 			<h2>cleansing Scratch, one studio at a time</h2>
-			<p class="commit">v1.2.0 | Updated June 18, 2016</p>
+			<p class="commit">v1.2.5 | Updated June 18, 2016</p>
 		</div>
 		<div class="pagewrapper">
 			<div class="main">
@@ -150,7 +150,8 @@
 					<p class="msg"></p>
 					<ul class="projects">
 					</ul>
-					<button onclick="regenerate()">OK</button>
+					<button onclick="filter()">OK</button>
+					<button onclick="autoselect()">Auto-select</button>
 					<button onclick="init()">Redo</button>
 				</div><br>
 				<div class="stage finish-alt" id="finish-alt" onsubmit="init()">
@@ -279,7 +280,7 @@ function start() {
 			projects[p].id,
 			function(x){
 				projects[p].studios=x;
-				console.log("Studios of project "+projects[p]+" successfully retrieved.");
+				console.log("Studios of project "+projects[p].id+" successfully retrieved.");
 			}
 		);
 	}
@@ -346,6 +347,28 @@ function start() {
 		_hide(select_msg);
 		_hide(div_select);
 		finish();
+	}
+}
+
+function autoselect() {
+	var p_list = div_select.querySelector("ul").children, p;
+	for(p=0;p<p_list.length;p++) {
+		check = 0;
+		var s_list = p_list[p].querySelector("ul").children, s, s_name;
+		for (var s=0;s<s_list.length;s++){
+			s_name = s_list[s].querySelector("span").innerHTML;
+			if (regex.test(s_name) > 0) {
+				s_list[s].querySelector("input").checked = true;
+				check++;
+			} else {
+				s_list[s].querySelector("input").checked = false;
+			}
+		}
+		if (check > 0) {
+			p_list[p].querySelector("input").checked = true;
+		} else {
+			p_list[p].querySelector("input").checked = false;
+		}
 	}
 }
 
