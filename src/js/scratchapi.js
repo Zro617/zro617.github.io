@@ -192,7 +192,7 @@ var ScratchAPI = {
 			var c = "", s = "";
 			if (u && p) {
 				var args = {
-					body: {username:u,password:p},
+					body: { username:u, password:p },
 					success: function() {
 						s = this.response.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1];
 						c = this.response.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1];
@@ -202,7 +202,6 @@ var ScratchAPI = {
 					}
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.users.login,args,false); 
-				};
 			}
 			// Update credentials
 			ScratchAPI.credentials.username = u;
