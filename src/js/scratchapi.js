@@ -65,6 +65,13 @@ var ScratchAPI = {
 		cdn_assets:   "cdn.assets.scratch.mit.edu",
 		cloud:        "cloud.scratch.mit.edu"
 	},
+	headers: {
+		"Cookie":"scratchcsrftoken=a;scratchlanguage=en",
+		"X-CSRFToken":"",
+		"Referer":"https://scratch.mit.edu",
+		"X-Requested-With":"XMLHttpRequest",
+		"Content-Length": 0
+	},
 	hrefs: {
 		frontpage: {
 			activity: ["GET","/"],
@@ -74,6 +81,7 @@ var ScratchAPI = {
 		users: {
 			get: ["GET","/users/<username>/"],
 			api: ["GET","/api/v1/user/<username>/"],
+			login: ["POST","/login/"],
 			session: ["GET","/session/"],
 			account_nav: ["GET","/fragment/account-nav.json"],
 			messages: {
@@ -183,16 +191,18 @@ var ScratchAPI = {
 			p || (p = prompt("Password"));
 			var c = "", s = "";
 			if (u && p) {
-				var xhr = new XMLHttpRequest();
-				xhr.open("GET","https://scratch.mit.edu/login/",false);
-				xhr.onload = function() {
-					if (this.status==200)
-						s = this.response.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1],
+				var args = {
+					body: {username:u,password:p},
+					success: function() {
+						s = this.response.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1];
 						c = this.response.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1];
-					else
+					},
+					fail: function() {
 						alert("Login failed");
+					}
 				};
-				xhr.send(JSON.stringify({username:u,password:p}));
+				ScratchAPI.request(ScratchAPI.hrefs.users.login,args,false); 
+				};
 			}
 			// Update credentials
 			ScratchAPI.credentials.username = u;
@@ -200,7 +210,7 @@ var ScratchAPI = {
 			ScratchAPI.credentials.csrf = c;
 			ScratcHAPI.credentials.session = s;
 			
-			return { csrf:c,session:s };
+			return ScratchAPI.credentials;
 		},
 		logout: function() {
 			ScratchAPI.credentials.username = "";
@@ -221,22 +231,35 @@ var ScratchAPI = {
 			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.id : prompt("Please enter your Scratch ID"); // TODO: Retrieve user ID from username via XHR
 		},
 		get_username: function() {
-			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.username : (ScratchAPI.credentials.username || (ScratchAPI.credentials.username = prompt("Username pls"));
+			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.username : (ScratchAPI.credentials.username || (ScratchAPI.credentials.username = prompt("Username pls")));
 		},
 		get_password: function() {
 			return ScratchAPI.credentials.password || (ScratchAPI.credentials.password = prompt("Password pls"));
 		}
 	},
-	request: function(req,args) {
+	request: function(req,args,async) {
 		var type = req[0], url = this.protocol+this.host+req[1], params = req[1].match(/<(\w+)>/g);
-		//console.log("URL (before): "+url);
 		if (args && params.length)
 			for (var e=0;e<params.length;e++)
 				url=url.replace("<"+params[e]+">",args[params[e]] || 1);
-		//console.log("URL (after):  "+url);
+		
+		var body = args.body?JSON.stringify(args.body):"";
+		
 		var xhr = new XMLHttpRequest();
-		xhr.open(type,url,this.async);
-		if (type=="PUT"||type=="POST")xhr.setRequestHeader("X-CSRFToken",this.session.get_csrf());
+		xhr.open(type,url,async||this.async);
+		
+		this.headers["Content-Length"] = body.length;
+		if (type=="PUT"||type=="POST") {
+			this.headers["X-CSRFToken"] = this.session.get_csrf());
+			this.headers["Cookie"] = "scratchlanguage=en;"
+			+"scratchcsrftoken="+this.session.get_csrf()+";"
+			+"scratchsessionid="+this.session.get_sessionid()+";";
+		}
+
+		var headers = Object.keys(this.headers);
+		for (var h in headers) {
+			xhr.setRequestHeader(headers[h],this.headers[headers[h]]);
+		}
 		xhr.onload = function() {
 			if (this.status==200) {
 				if (args.success) args.success(this.response);
@@ -246,7 +269,7 @@ var ScratchAPI = {
 				else console.log("FAIL");
 			}
 		};
-		xhr.send(args.body?JSON.stringify(args.body):null);
+		xhr.send(body);
 	},
 	auxiliary: {
 		get_page_ids: function(dom,acc) {
