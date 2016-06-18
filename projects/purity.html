@@ -262,11 +262,12 @@ function start() {
 	
 	ScratchAPI.async = false;
 	// Get all projects
-	ScratchAPI.auxiliary.get_all_pages(
-		ScratchAPI.hrefs.users.projects,
-		{ username: username },
-		function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects) },
-		function(x) { console.log("No more projects.") }
+	ScratchAPI.main.users.get_projects(
+		username,
+		function(x){
+			projects=x;
+			console.log("Projects successfully retrieved.");
+		}
 	);
 	
 	if (!projects.length) return error("Couldn't find any projects...?");
@@ -274,11 +275,12 @@ function start() {
 	// Get all studios for each project
 	for (var p=0;p<projects.length;p++) {
 		projects[p].studios = [];
-		ScratchAPI.auxiliary.get_all_pages(
-			ScratchAPI.hrefs.projects.studios.get,
-			{ project: projects[p].id },
-			function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects[p].studios) },
-			function(x) { console.log("No more studios for project "+projects[p].id) }
+		ScratchAPI.main.projects.get_studios(
+			projects[p].id,
+			function(x){
+				projects[p].studios=x;
+				console.log("Studios of project "+projects[p]+" successfully retrieved.");
+			}
 		);
 	}
 	
