@@ -260,11 +260,13 @@ var ScratchAPI = {
 			xhr.setRequestHeader(headers[h],this.headers[headers[h]]);
 		}
 		xhr.onload = function() {
+			// Handle plaintext documents from sync'ed requests
+			var doc = (typeof this.response=="string")?(new DOMParser).parseFromString(this.response,"text/html"):this.response;
 			if (this.status==200) {
-				if (args.success) args.success(this.response);
+				if (args.success) args.success(doc);
 				else console.log("SUCCESS");
 			} else {
-				if (args.fail) args.fail(this.response);
+				if (args.fail) args.fail(doc);
 				else console.log("FAIL");
 			}
 		};
