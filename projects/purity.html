@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<!-- are you reading my code? help me develop it @ https://github.com/Zro617/zro617.github.io -->
+	  <title>purity - Zro617's Website</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" href="src/css/zro.css"></link>
+		<style>
+		hidden {
+			display: none;
+		}
+		block {
+			display: block;
+		}
+		inline {
+			display: inline;
+		}
+		inline-block {
+			display: inline-block;
+		}
+		.title {
+			text-align: center;
+		}
+		.title, .pagewrapper {
+			font-family: "Segoe UI Light",sans-serif;
+			width: 600px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		h1 {
+			font-size: 36px;
+			font-weight: lighter;
+		}
+		h2 {
+			font-size: 24px;
+			font-weight: lighter;
+		}
+		h3 {
+			font-size: 20px;
+			font-weight: bold;
+			padding-bottom: 12px;
+			border-bottom-style: solid;
+			border-bottom-width: 4px;
+			border-bottom-color: white;
+		}
+		div.stage {
+			font-family: "Lucida Grande","DejaVu Sans",Verdana,Arial,sans-serif;
+			display: inline-block;
+			color: white;
+			border-style: outset;
+			border-width: 4px;
+			border-radius: 10px;
+			shadow: 12px 12px;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+		.init {
+			border-color: #c88330;
+			background-color: #c88330;
+		}
+		.select {
+			border-color: #5cb712;
+			background-color: #5cb712;
+		}
+		.finish {
+			border-color: #CC5B22;
+			background-color: #CC5B22;
+		}
+		.finish-alt {
+			border-color: #632D99;
+			background-color: #632D99;
+		}
+		.error {
+			border-color: #D42828;
+			background-color: #D42828;
+		}
+		button {
+			font-family: "Consolas",monospace;
+			margin-left: auto;
+			margin-right: auto;
+			border-style: outset;
+			border-radius: 8px;
+		}
+		input, button {
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
+		input[type=text], input[type=password] {
+			width: 200px;
+		}
+		input[type=checkbox] {
+			display: inline-block;
+		}
+		textarea {
+			font-family: "Consolas",monospace;
+			font-size: 12px;
+			width: 98%;
+			padding: 5px;
+			border-style: inset;
+			border-radius: 8px;
+		}
+		ul {
+			list-style-type: none;
+			list-style-position: outside;
+		}
+		ul.projects {
+			padding-left: 0px;
+		}
+		ul.studios {
+			padding-left: 20px;
+		}
+		.log {
+			font-size: 9px;
+		}
+		.commit {
+			font-family: "Consolas",monospace;
+			font-size: 12px;
+			text-align: center;
+		}
+		</style>
+	</head>
+	<body>
+		<header>
+		</header>
+		<div class="title">
+			<h1>purity</h1>
+			<h2>cleansing Scratch, one studio at a time</h2>
+			<p class="commit">v1.2.0 | Updated June 18, 2016</p>
+		</div>
+		<div class="pagewrapper">
+			<div class="main">
+				<div class="stage init" id="init" onsubmit="#">
+					<h3>init</h3>
+					<input type="text" class="block" id="username" value="" placeholder="username" title="your Scratch username"></input><br>
+					<input type="password" class="block" id="password" value="" placeholder="password (optional)" title="your Scratch password"></input><br>
+					<textarea class="block" id="custom" placeholder="custom filter here..."></textarea><br>
+					<button class="block" onclick="start()">OK</button>
+					<input type="checkbox" id="manual-selection"/><span>let me choose</span>
+				</div><br>
+				<div class="stage error" id="error" onsubmit="init()">
+					<h3>epic fail</h3>
+					<p>This program encountered a fatal error:</p>
+					<p class="msg">(No Error)</p>
+					<button onclick="init()">Redo</button>
+				</div><br>
+				<div class="stage select" id="select">
+					<h3>select</h3>
+					<p class="msg"></p>
+					<ul class="projects">
+					</ul>
+					<button onclick="regenerate()">OK</button>
+					<button onclick="init()">Redo</button>
+				</div><br>
+				<div class="stage finish-alt" id="finish-alt" onsubmit="init()">
+					<h3>almost there...</h3>
+					<p>Because of CSRF verification issues, you will have to do the following:<br>
+					  1. Copy the code below<br>
+					  2. Go to the Scratch website (make sure you're logged in)<br>
+					  3. Open your browser's console (Right-Click, Inspect Element, Console)<br>
+					  4. Paste the code and run it<br>
+					  5. Celebrate!
+					</p>
+					<textarea readonly></textarea>
+					<button class="inline-block" onclick="init()">Redo</button>
+					<p>Alternatively, if you would like to run this now, enter your password.</p>
+					<button class="inline-block" onclick="_show(div_almost)">Enter password</button>
+					<div class="stage init" id="almost" style="display:none;">
+						<p>NOTE: If you do no feel comfortable using your password, then don't. Just follow the above steps.</p>
+						<input type="password" id="password2" placeholder="password" title="Your Scratch password"></input>
+						<button class="inline" onclick="_setp(div_almost.querySelector('input').value);finish()">OK</button>
+						<button class="inline" onclick="_setp('');_hide(div_almost)">Cancel</button>
+						
+					</div>
+				</div><br>
+				<div class="stage finish" id="finish" onsubmit="init()">
+					<h3>epic win</h3>
+					<pre class="log"></pre>
+					<p>A total of <span id="studios-removed-count">0</span> studios were removed from <span id="projects-cleansed-count">0</span> projects!
+					</p>
+					<button onclick="init()">Redo</button>
+				</div>
+			</div>
+		</div>
+		<footer>
+		</footer>
+	</body>
+	<script src="//zro617.github.io/src/js/boilerplate.js"></script>
+	<script src="//zro617.github.io/src/js/ae.js"></script>
+	<script src="//zro617.github.io/src/js/scratchapi.js"></script>
+	<script>
+var projects = [],
+div_init = document.querySelector("div#init"),
+div_select = document.querySelector("div#select"),
+div_finish = document.querySelector("div#finish"),
+div_finishalt = document.querySelector("div#finish-alt"),
+div_almost = document.querySelector("div#almost"),
+div_error = document.querySelector("div#error"),
+pre_log = document.querySelector("pre.log);
+
+function _show(e) { e.style.display = "inline-block"; }
+function _hide(e) { e.style.display = "none"; }
+function _scroll(e) { var s=window.scroll||window.scrollTo;s(e.pageX,e.pageY); }
+function _getu() { return document.querySelector("#username").value; }
+function _setu(x) { document.querySelector("#username").value=x; }
+function _getp() { return document.querySelector("#password").value; }
+function _setp(x) { document.querySelector("#password").value=x;document.querySelector("#password2").value=x; }
+function _getms() { return !!document.querySelector("#manual-selection").checked; }
+function _setms(x) { document.querySelector("#manual-selection").checked = !!x; }
+function _selectall(e) { var children=e.parentElement.querySelectorAll("li");for(var s=0;s<children.length;s++)children[s].querySelector("input").checked=e.checked; }
+function _clear(e) { while(e.hasChildNodes())e.removeChild(e.firstChild); }
+function _test(x,y) {projects=[];for(var p=1;p<=x;p++){projects.push({id:p,name:"project_"+p,studios:[]});for(var s=1;s<=y;s++)projects[p-1].studios.push({id:s,name:"studio_"+s});}}
+function _compile() {
+	var mini = [];
+	for(var p=0;p<projects.length;p++){mini.push({p:projects[p].id,s:[]});for(var s=0;s<projects[p].studios.length;s++)mini[p].s.push(projects[p].studios[s].id);}
+	return 'var j='+JSON.stringify(mini)+',p,s;for(p in j)for(s in j[p].s)$.ajax({type:"PUT",url:"https://scratch.mit.edu/site-api/projects/in/"+j[p].s[s]+"/remove/?pks="+j[p].p,async:false,success:function(){console.log("SUCCESS");},error:function(){console.log("FAILED");}});console.log("DONE");';
+}
+
+
+function init() {
+	_setu("");
+	_setp("");
+	_show(div_init);
+	_hide(div_error);
+	_hide(div_select);
+	_hide(div_finishalt);
+	_hide(div_almost);
+	_hide(div_finish);
+	username = "";
+	projects = [];
+}
+
+function error(msg) {
+	var error_msg = div_error.querySelector(".msg");
+	error_msg.innerHTML = msg;
+	_show(div_error);
+	return 0;
+}
+
+function start() {
+	_clear(div_select.querySelector("ul"));
+	_clear(pre_log)
+	_hide(div_error);
+	_hide(div_select);
+	_hide(div_finishalt);
+	_hide(div_finish);
+	
+	projects = [];
+	var username = _getu();
+	if (!username) return error("Username not set.");
+	
+	regex.set(div_init.querySelector("textarea#custom").value);
+	
+	var select_msg = div_select.querySelector(".msg");
+	select_msg.innerHTML = "Fetching projects. Please wait...";
+	_show(select_msg);
+	_show(div_select);
+	
+	// Testing object
+	//_test(5,3);
+	
+	ScratchAPI.async = false;
+	// Get all projects
+	ScratchAPI.auxiliary.get_all_pages(
+		ScratchAPI.hrefs.users.projects,
+		{ username: username },
+		function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects) },
+		function(x) { console.log("No more projects.") }
+	);
+	
+	if (!projects.length) return error("Couldn't find any projects...?");
+	
+	// Get all studios for each project
+	for (var p=0;p<projects.length;p++) {
+		projects[p].studios = [];
+		ScratchAPI.auxiliary.get_all_pages(
+			ScratchAPI.hrefs.projects.studios.get,
+			{ project: projects[p].id },
+			function(x) { ScratchAPI.auxiliary.get_page_ids_and_names(x,projects[p].studios) },
+			function(x) { console.log("No more studios for project "+projects[p].id) }
+		);
+	}
+	
+	if (_getms()) {
+		select_msg.innerHTML = "Generating UI...";
+		
+		for (var p=0;p<projects.length;p++) {
+			var studios = projects[p].studios;
+		
+			var li_p = document.createElement("li");
+			li_p.setAttribute("class","project");
+			li_p.setAttribute("id","project-"+projects[p].id);
+			var chk_p = document.createElement("input");
+			chk_p.setAttribute("type","checkbox");
+			chk_p.setAttribute("checked",true);
+			chk_p.setAttribute("onclick","_selectall(this)");
+			var span_p = document.createElement("span");
+			span_p.innerHTML = projects[p].name;
+		
+			var ul_s = document.createElement("ul");
+			ul_s.setAttribute("class","studios");
+			for (var s=0;s<studios.length;s++) {
+				var li_s = document.createElement("li");
+				li_s.setAttribute("class","studio");
+				li_s.setAttribute("id","studio-"+studios[s].id);
+				var chk_s = document.createElement("input");
+				chk_s.setAttribute("type","checkbox");
+				chk_s.setAttribute("checked",regex.test(studios[s].name) > 0);
+				var span_s = document.createElement("span");
+				span_s.innerHTML = studios[s].name;
+				li_s.appendChild(chk_s);
+				li_s.appendChild(span_s);
+				ul_s.appendChild(li_s);
+			}
+			li_p.appendChild(chk_p);
+			li_p.appendChild(span_p);
+			li_p.appendChild(ul_s);
+			
+			div_select.querySelector("ul").appendChild(li_p);
+		}
+		
+		_hide(select_msg);
+	  } else {
+		select_msg.innerHTML = "Filtering data...";
+		// The user is letting the computer do the choosing
+		var p = 0;
+		while (p < projects.length) {
+			var s = 0;
+			while (s < projects[p].studios.length) {
+				if (regex.test(projects[p].studios[s].name) > 0) {
+					s++;
+				} else {
+					projects[p].studios.splice(s,1);
+				}
+			}
+			if (projects[p].studios.length > 0) {
+				p++;
+			} else {
+				projects.splice(p,1);
+			}
+		}
+		
+		_hide(select_msg);
+		_hide(div_select);
+		finish();
+	}
+}
+
+function regenerate() {
+	projects = [];
+	
+	var p_list = div_select.querySelector("ul").children, p, p_name, p_id, p_studios;
+	for(p=0;p<p_list.length;p++) {
+		if (p_list[p].querySelector("input").checked) {
+			p_name = p_list[p].querySelector("span").innerHTML;
+			p_id = p_list[p].id.match(/\d+/)[0];
+			p_studios = [];
+			var s_list = p_list[p].querySelector("ul").children, s, s_name, s_id;
+			for (var s=0;s<s_list.length;s++){
+				if (s_list[s].querySelector("input").checked) {
+					s_name = s_list[s].querySelector("span").innerHTML;
+					s_id = s_list[s].id.match(/\d+/)[0];
+					p_studios.push({name:s_name,id:s_id});
+				}
+			}
+			projects.push({name:p_name,id:p_id,studios:p_studios});
+		}
+	}
+	finish();
+}
+
+function finish() {
+	_hide(div_almost);
+	_clear(pre_log);
+	if (_getp()) {
+		ScratchAPI.session.login(_getu(),_getp());
+		var p,s;
+		for (p=0;p<projects.length;p++) {
+			var p_name = projects[p].name;
+			var p_id = projects[p].id;
+			var p_studios = projects[p].studios;
+			for (s=0;s<p_studios.length;s++) {
+				var s_name = p_studios[s].name;
+				var s_id = p_studios[s].id;
+				ScratchAPI.main.projects.remove_from_studio(
+					p_id,
+					s_id,
+					function(x) {
+						pre_log.innerHTML += '"'+p_name+'" is no longer in "'+s_name+'".<br>';
+					}
+				);
+			}
+		}
+		
+		for(p=0,s=0;p<projects.length;p++)s+=projects[p].studios.length;
+		div_finish.querySelector("#studios-removed-count").innerHTML = s || 0;
+		div_finish.querySelector("#projects-cleansed-count").innerHTML = p || 0;
+		_show(div_finish);
+	} else {
+		div_finishalt.querySelector("textarea").value = _compile();
+		_show(div_finishalt);
+	}
+}
+	</script>
+</html>
