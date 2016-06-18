@@ -212,11 +212,6 @@ function _setms(x) { document.querySelector("#manual-selection").checked = !!x; 
 function _selectall(e) { var children=e.parentElement.querySelectorAll("li");for(var s=0;s<children.length;s++)children[s].querySelector("input").checked=e.checked; }
 function _clear(e) { while(e.hasChildNodes())e.removeChild(e.firstChild); }
 function _test(x,y) {projects=[];for(var p=1;p<=x;p++){projects.push({id:p,name:"project_"+p,studios:[]});for(var s=1;s<=y;s++)projects[p-1].studios.push({id:s,name:"studio_"+s});}}
-function _compile() {
-	var mini = [];
-	for(var p=0;p<projects.length;p++){mini.push({p:projects[p].id,s:[]});for(var s=0;s<projects[p].studios.length;s++)mini[p].s.push(projects[p].studios[s].id);}
-	return 'var j='+JSON.stringify(mini)+',p,s;for(p in j)for(s in j[p].s)$.ajax({type:"PUT",url:"https://scratch.mit.edu/site-api/projects/in/"+j[p].s[s]+"/remove/?pks="+j[p].p,async:false,success:function(){console.log("SUCCESS");},error:function(){console.log("FAILED");}});console.log("DONE");';
-}
 
 
 function init() {
@@ -237,6 +232,28 @@ function error(msg) {
 	error_msg.innerHTML = msg;
 	_show(div_error);
 	return 0;
+}
+
+function autoselect() {
+	var p_list = div_select.querySelector("ul").children, p;
+	for(p=0;p<p_list.length;p++) {
+		check = 0;
+		var s_list = p_list[p].querySelector("ul").children, s, s_name;
+		for (var s=0;s<s_list.length;s++){
+			s_name = s_list[s].querySelector("span").innerHTML;
+			if (regex.test(s_name) > 0) {
+				s_list[s].querySelector("input").checked = true;
+				check++;
+			} else {
+				s_list[s].querySelector("input").checked = false;
+			}
+		}
+		if (check > 0) {
+			p_list[p].querySelector("input").checked = true;
+		} else {
+			p_list[p].querySelector("input").checked = false;
+		}
+	}
 }
 
 function start() {
@@ -267,7 +284,7 @@ function start() {
 		username,
 		function(x){
 			projects=x;
-			console.log("Projects successfully retrieved.");
+			//console.log("Projects successfully retrieved.");
 		}
 	);
 	
@@ -280,9 +297,10 @@ function start() {
 			projects[p].id,
 			function(x){
 				projects[p].studios=x;
-				console.log("Studios of project "+projects[p].id+" successfully retrieved.");
+				//console.log("Studios of project "+projects[p].id+" successfully retrieved.");
 			}
 		);
+		select_msg.innerHTML = "Fetching studios. Please wait... ("+(p+1)+"/"+projects.length+")";
 	}
 	
 	if (_getms()) {
@@ -296,7 +314,6 @@ function start() {
 			li_p.setAttribute("id","project-"+projects[p].id);
 			var chk_p = document.createElement("input");
 			chk_p.setAttribute("type","checkbox");
-			chk_p.setAttribute("checked",true);
 			chk_p.setAttribute("onclick","_selectall(this)");
 			var span_p = document.createElement("span");
 			span_p.innerHTML = projects[p].name;
@@ -309,7 +326,11 @@ function start() {
 				li_s.setAttribute("id","studio-"+studios[s].id);
 				var chk_s = document.createElement("input");
 				chk_s.setAttribute("type","checkbox");
-				chk_s.setAttribute("checked",regex.test(studios[s].name) > 0);
+				chk_s.onclick = function() {
+					if (this.checked) {
+						this.parentElement.parentElement.parentElement.querySelector("input").checked = true;
+					}
+				};
 				var span_s = document.createElement("span");
 				span_s.innerHTML = studios[s].name;
 				li_s.appendChild(chk_s);
@@ -322,6 +343,7 @@ function start() {
 			
 			div_select.querySelector("ul").appendChild(li_p);
 		}
+		autoselect();
 		
 		_hide(select_msg);
 	  } else {
@@ -350,29 +372,7 @@ function start() {
 	}
 }
 
-function autoselect() {
-	var p_list = div_select.querySelector("ul").children, p;
-	for(p=0;p<p_list.length;p++) {
-		check = 0;
-		var s_list = p_list[p].querySelector("ul").children, s, s_name;
-		for (var s=0;s<s_list.length;s++){
-			s_name = s_list[s].querySelector("span").innerHTML;
-			if (regex.test(s_name) > 0) {
-				s_list[s].querySelector("input").checked = true;
-				check++;
-			} else {
-				s_list[s].querySelector("input").checked = false;
-			}
-		}
-		if (check > 0) {
-			p_list[p].querySelector("input").checked = true;
-		} else {
-			p_list[p].querySelector("input").checked = false;
-		}
-	}
-}
-
-function regenerate() {
+function filter() {
 	projects = [];
 	
 	var p_list = div_select.querySelector("ul").children, p, p_name, p_id, p_studios;
@@ -423,7 +423,16 @@ function finish() {
 		div_finish.querySelector("#projects-cleansed-count").innerHTML = p || 0;
 		_show(div_finish);
 	} else {
-		div_finishalt.querySelector("textarea").value = _compile();
+		var mini = [];
+		for(var p=0;p<projects.length;p++){
+			var studios=projects[p].studios;
+			if (studios.length) {
+				mini.push({p:projects[p].id,s:[]});
+				for (var s=0;s<studios.length;s++)
+					mini[p].s.push(studios[s].id);
+			}
+		}
+		div_finishalt.querySelector("textarea").value = 'var j='+JSON.stringify(mini)+',p,s;for(p in j)for(s in j[p].s)$.ajax({type:"PUT",url:"https://scratch.mit.edu/site-api/projects/in/"+j[p].s[s]+"/remove/?pks="+j[p].p,async:false,success:function(){console.log("SUCCESS");},error:function(){console.log("FAILED");}});console.log("DONE");';
 		_show(div_finishalt);
 	}
 }
