@@ -248,12 +248,12 @@ var ScratchAPI = {
 			for (var e=0;e<params.length;e++)
 				url=url.replace(params[e],args[params[e].substring(1,params[e].length-1)] || 1);
 		
-		var body = args.body?JSON.stringify(args.body):"";
+		var body = (typeof args.body !== undefined) ? JSON.stringify(args.body) : "";
 		
 		var xhr = new XMLHttpRequest();
 		xhr.open(type,url,async||this.async);
 		
-		this.headers["Content-Length"] = body.length;
+		if (body.length) this.headers["Content-Length"] = body.length;
 		if (type=="PUT"||type=="POST") {
 			this.headers["X-CSRFToken"] = this.session.get_csrf();
 			this.headers["Cookie"] = "scratchlanguage=en;"
@@ -263,7 +263,8 @@ var ScratchAPI = {
 
 		var headers = Object.keys(this.headers);
 		for (var h in headers) {
-			xhr.setRequestHeader(headers[h],this.headers[headers[h]]);
+			try { xhr.setRequestHeader(headers[h],this.headers[headers[h]]); }
+			catch (e) {}
 		}
 		xhr.onload = function() {
 			// Handle plaintext documents from sync'ed requests
