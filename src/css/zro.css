@@ -41,6 +41,8 @@ button {
   border-radius:4px;
   -moz-border-radius:4px;
   -webkit-border-radius:4px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 button:hover {
   
@@ -334,7 +336,7 @@ small {
  font-size: 8px;
 }
 span {
-  display: block;
+  display: inline;
   margin: 5px;
 }
 strong {
