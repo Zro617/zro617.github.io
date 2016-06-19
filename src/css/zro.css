@@ -85,6 +85,7 @@ div {
 }
 div.pagewrapper {
   margin-left: 200px;
+  margin-right: auto;
   margin-bottom: 100px;
   padding: 20px;
 }
@@ -127,15 +128,18 @@ form {
 h1 {
   text-align: center;
   font-size: 48px;
+  font-weight: lighter;
 }
 h2 {
   text-align: center;
   color: #555;
   font-size: 24px;
+  font-weight: lighter;
 }
 h3 {
-  text-align: center;
+  text-align: left;
   font-size: 18px;
+  font-weight: bold;
 }
 h4 {
   
@@ -189,16 +193,18 @@ img.small-thumbnail {
 input {
   font-family: "Segoe UI",Arial,sans-serif;
 }
+input[type=submit], button {
+  display: inline-block;
+}
 input[type=text], input[type=password] {
-  text-align: center;
-  width: 90%;
-  left: 10%;
+  text-align: left;
+  width: 200px;
 }
 input[type=checkbox] {
-  
+  display: inline-block;
 }
 input[type=radio] {
-  
+  display: inline-block;
 }
 ins {
   font-style: underline;
@@ -311,7 +317,11 @@ td {
   
 }
 textarea {
-  
+  font-family: "Consolas",monospace;
+  font-size: 12px;
+  padding: 5px;
+			border-style: inset;
+			border-radius: 8px;
 }
 tfoot {
   
