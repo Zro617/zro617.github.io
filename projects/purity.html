@@ -6,39 +6,14 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" href="//zro617.github.io/src/css/zro.css"></link>
 		<style>
-		hidden {
-			display: none;
-		}
-		block {
-			display: block;
-		}
-		inline {
-			display: inline;
-		}
-		inline-block {
-			display: inline-block;
-		}
-		.title {
-			text-align: center;
-		}
 		.title, .pagewrapper {
 			font-family: "Segoe UI Light",sans-serif;
-			width: 600px;
-			margin-left: auto;
-			margin-right: auto;
+			width: 600px !important;
+			margin-left: auto !important;
+			margin-right: auto !important;
 		}
-		h1 {
-			font-size: 36px;
-			font-weight: lighter;
-		}
-		h2 {
-			font-size: 24px;
-			font-weight: lighter;
-		}
-		h3 {
-			font-size: 20px;
-			font-weight: bold;
-			padding-bottom: 12px;
+		h3.neat {
+			padding-bottom: 8px;
 			border-bottom-style: solid;
 			border-bottom-width: 4px;
 			border-bottom-color: white;
@@ -76,43 +51,11 @@
 			border-color: #D42828;
 			background-color: #D42828;
 		}
-		button {
-			font-family: "Consolas",monospace;
-			margin-left: auto;
-			margin-right: auto;
-			border-style: outset;
-			border-radius: 8px;
-		}
-		input, button {
-			margin-top: 5px;
-			margin-bottom: 5px;
-		}
-		input[type=text], input[type=password] {
-			width: 200px;
-		}
-		input[type=checkbox] {
-			display: inline-block;
-		}
-		textarea {
-			font-family: "Consolas",monospace;
-			font-size: 12px;
-			width: 98%;
-			padding: 5px;
-			border-style: inset;
-			border-radius: 8px;
-		}
-		ul {
-			list-style-type: none;
-			list-style-position: outside;
-		}
 		ul.projects {
 			padding-left: 0px;
 		}
 		ul.studios {
 			padding-left: 20px;
-		}
-		.log {
-			font-size: 9px;
 		}
 		.commit {
 			font-family: "Consolas",monospace;
@@ -124,29 +67,29 @@
 	<body>
 		<header>
 		</header>
-		<div class="title">
+		<div class="title center">
 			<h1>purity</h1>
 			<h2>cleansing Scratch, one studio at a time</h2>
-			<p class="commit">v1.2.5 | Updated June 18, 2016</p>
+			<p class="commit">v1.2.6 | Updated June 18, 2016</p>
 		</div>
 		<div class="pagewrapper">
 			<div class="main">
 				<div class="stage init" id="init" onsubmit="#">
-					<h3>init</h3>
-					<input type="text" class="block" id="username" value="" placeholder="username" title="your Scratch username"></input><br>
-					<input type="password" class="block" id="password" value="" placeholder="password (optional)" title="your Scratch password"></input><br>
-					<textarea class="block" id="custom" placeholder="custom filter here..."></textarea><br>
+					<h3 class="neat">init</h3>
+					<input type="text" class="block" id="username" value="" placeholder="username" title="your Scratch username"></input>
+					<input type="password" class="block" id="password" value="" placeholder="password (optional)" title="your Scratch password"></input>
+					<textarea class="block code inset round-corners" id="custom" placeholder="custom filter here..."></textarea>
 					<button class="block" onclick="start()">OK</button>
 					<input type="checkbox" id="manual-selection"/><span>let me choose</span>
 				</div><br>
 				<div class="stage error" id="error" onsubmit="init()">
-					<h3>epic fail</h3>
+					<h3 class="neat">epic fail</h3>
 					<p>This program encountered a fatal error:</p>
 					<p class="msg">(No Error)</p>
 					<button onclick="init()">Redo</button>
 				</div><br>
 				<div class="stage select" id="select">
-					<h3>select</h3>
+					<h3 class="neat">select</h3>
 					<p class="msg"></p>
 					<ul class="projects">
 					</ul>
@@ -157,7 +100,7 @@
 					<button onclick="init()">Redo</button>
 				</div><br>
 				<div class="stage finish-alt" id="finish-alt" onsubmit="init()">
-					<h3>almost there...</h3>
+					<h3 class="neat">almost there...</h3>
 					<p>Because of CSRF verification issues, you will have to do the following:<br>
 					  1. Copy the code below<br>
 					  2. Go to the Scratch website (make sure you're logged in)<br>
@@ -165,7 +108,7 @@
 					  4. Paste the code and run it<br>
 					  5. Celebrate!
 					</p>
-					<textarea readonly></textarea>
+					<textarea class="block code inset round-corners" readonly></textarea>
 					<button class="inline-block" onclick="init()">Redo</button>
 					<p>Alternatively, if you would like to run this now, enter your password.</p>
 					<button class="inline-block" onclick="_show(div_almost)">Enter password</button>
@@ -178,9 +121,9 @@
 					</div>
 				</div><br>
 				<div class="stage finish" id="finish" onsubmit="init()">
-					<h3>epic win</h3>
-					<pre class="log"></pre>
-					<p>A total of <span id="studios-removed-count">0</span> studios were removed from <span id="projects-cleansed-count">0</span> projects!
+					<h3 class="neat">epic win</h3>
+					<pre class="log smalltext"></pre>
+					<p>A total of <span class="inline" id="studios-removed-count">0</span> studios were removed from <span class="inline" id="projects-cleansed-count">0</span> projects!
 					</p>
 					<button onclick="init()">Redo</button>
 				</div>
