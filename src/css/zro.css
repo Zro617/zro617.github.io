@@ -24,6 +24,9 @@ b {
   cursor:auto;
   font-size: 20px;
 }
+.block {
+  display: block;
+}
 blockquote {
   cursor:auto;
   font-style: italic;
@@ -49,12 +52,22 @@ caption {
   cursor:help;
   font-style: italic;
 }
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.center-text {
+  text-align: center;
+}
 cite {
   cursor:help;
   font-style: italic;
 }
-code {
+code, .code {
   font-family: "Consolas","Courier New",monospace;
+}
+.comic {
+  font-family: "Comic Sans MS";
 }
 col {
   
@@ -164,6 +177,9 @@ header {
   height: 100%;
   font-size: 16px;
 }
+.hidden {
+  display: none;
+}
 hr {
   margin: 20px;
 }
@@ -190,14 +206,27 @@ img.small-thumbnail {
   width: 80px;
   height: 60px;
 }
+.inline {
+  display: inline;
+}
+.inline-block {
+  display: inline-block;
+}
+.inline-flex {
+  display: inline-flex;
+}
 input {
   font-family: "Segoe UI",Arial,sans-serif;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 input[type=submit], button {
   display: inline-block;
+  
 }
 input[type=text], input[type=password] {
   text-align: left;
+  display: block;
   width: 200px;
 }
 input[type=checkbox] {
@@ -208,6 +237,9 @@ input[type=radio] {
 }
 ins {
   font-style: underline;
+}
+.inset {
+  border-style: inset;
 }
 kbd {
   
@@ -267,6 +299,9 @@ option {
 output {
   
 }
+.outset {
+  border-style: outset;
+}
 p {
   
 }
@@ -279,6 +314,10 @@ progress {
 q {
   
 }
+.round-corners {
+  border-radius: 8px;
+  border-width: 4px;
+}
 s {
   
 }
@@ -290,6 +329,9 @@ select {
 }
 small {
   
+}
+.smalltext {
+ font-size: 8px;
 }
 span {
   display: block;
@@ -320,8 +362,6 @@ textarea {
   font-family: "Consolas",monospace;
   font-size: 12px;
   padding: 5px;
-			border-style: inset;
-			border-radius: 8px;
 }
 tfoot {
   
@@ -345,7 +385,8 @@ u {
   
 }
 ul {
-  
+  list-style-type: none;
+  list-style-position: outside;
 }
 var {
   
