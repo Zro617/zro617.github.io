@@ -248,7 +248,7 @@ var ScratchAPI = {
 			for (var e=0;e<params.length;e++)
 				url=url.replace(params[e],args[params[e].substring(1,params[e].length-1)] || 1);
 		
-		var body = (typeof args.body !== undefined) ? JSON.stringify(args.body) : "";
+		var body = (typeof args.body !== "undefined") ? JSON.stringify(args.body) : "";
 		
 		var xhr = new XMLHttpRequest();
 		xhr.open(type,url,async||this.async);
@@ -277,7 +277,7 @@ var ScratchAPI = {
 				else console.log("FAIL");
 			}
 		};
-		xhr.send(body);
+		xhr.send(body||null);
 	},
 	auxiliary: {
 		get_page_ids: function(dom,acc) {
