@@ -4,7 +4,7 @@
 	<!-- are you reading my code? help me develop it @ https://github.com/Zro617/zro617.github.io -->
 	  <title>purity - Zro617's Website</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" href="src/css/zro.css"></link>
+		<link rel="stylesheet" href="//zro617.github.io/src/css/zro.css"></link>
 		<style>
 		hidden {
 			display: none;
@@ -151,7 +151,9 @@
 					<ul class="projects">
 					</ul>
 					<button onclick="filter()">OK</button>
-					<button onclick="autoselect()">Auto-select</button>
+					<button onclick="autoselect()">Auto-Select</button>
+					<button onclick="selectall(true)">Select All</button>
+					<button onclick="selectall(false)">Deselect All</button>
 					<button onclick="init()">Redo</button>
 				</div><br>
 				<div class="stage finish-alt" id="finish-alt" onsubmit="init()">
@@ -188,7 +190,7 @@
 		</footer>
 	</body>
 	<script src="//zro617.github.io/src/js/boilerplate.js"></script>
-	<script src="//zro617.github.io/src/js/ae.js"></script>
+	<script src="//zro617.github.io/src/js/filter.js"></script>
 	<script src="//zro617.github.io/src/js/scratchapi.js"></script>
 	<script>
 var projects = [],
@@ -235,6 +237,12 @@ function error(msg) {
 }
 
 function autoselect() {
+	try {
+		regex.set(div_init.querySelector("textarea#custom").value);
+	} catch (e) {
+		regex.extras = null;
+	}
+	
 	var p_list = div_select.querySelector("ul").children, p;
 	for(p=0;p<p_list.length;p++) {
 		check = 0;
@@ -256,6 +264,17 @@ function autoselect() {
 	}
 }
 
+function selectall(sel) {
+	var p_list = div_select.querySelector("ul").children, p;
+	for(p=0;p<p_list.length;p++) {
+		var s_list = p_list[p].querySelector("ul").children, s;
+		for (var s=0;s<s_list.length;s++){
+			s_list[s].querySelector("input").checked = sel;
+		}
+		p_list[p].querySelector("input").checked = sel;
+	}
+}
+
 function start() {
 	_clear(div_select.querySelector("ul"));
 	_clear(pre_log)
@@ -267,11 +286,6 @@ function start() {
 	projects = [];
 	var username = _getu();
 	if (!username) return error("Username not set.");
-	try {
-		regex.set(div_init.querySelector("textarea#custom").value);
-	} catch (e) {
-		return error(e.message);
-	}
 	
 	var select_msg = div_select.querySelector(".msg");
 	select_msg.innerHTML = "Fetching projects. Please wait...";
@@ -291,7 +305,7 @@ function start() {
 			projects=x;
 			//console.log("Projects successfully retrieved.");
 		}
-	);
+		);
 	} catch (e) {
 		return error(e.message);
 	}
@@ -320,7 +334,11 @@ function start() {
 		
 		for (var p=0;p<projects.length;p++) {
 			var studios = projects[p].studios;
-		
+			if (studios.length == 0) {
+				// A project in no studios is not necessary to display
+				projects.splice(p--,1);
+				continue;
+			}
 			var li_p = document.createElement("li");
 			li_p.setAttribute("class","project");
 			li_p.setAttribute("id","project-"+projects[p].id);
