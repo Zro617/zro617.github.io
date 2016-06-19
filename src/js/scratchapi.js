@@ -199,6 +199,7 @@ var ScratchAPI = {
 					},
 					fail: function() {
 						alert("Login failed");
+						u = "", p = "";
 					}
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.users.login,args,false); 
@@ -218,19 +219,24 @@ var ScratchAPI = {
 			ScratchAPI.credentials.session = "";
 		},
 		get_csrf: function() {
-			return Scratch ? document.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1] : (ScratchAPI.credentials.csrf || ScratchAPI.session.login().csrf);
+			if (typeof Scratch !== 'undefined') return document.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1] ;
+			return (ScratchAPI.credentials.csrf || ScratchAPI.session.login().csrf);
 		},
 		get_sessionid: function() {
-			return Scratch ? document.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1] : (ScratchAPI.credentials.session || ScratchAPI.session.login().session);
+			if (typeof Scratch !== 'undefined') return document.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1];
+			return (ScratchAPI.credentials.session || ScratchAPI.session.login().session);
 		},
 		get_user_model: function() {
-			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model : { error: "not logged in" };
+			if (typeof Scratch !== 'undefined') return Scratch.INIT_DATA.LOGGED_IN_USER.model
+			return { error: "not logged in" };
 		},
 		get_user_id: function() {
-			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.id : prompt("Please enter your Scratch ID"); // TODO: Retrieve user ID from username via XHR
+			if (typeof Scratch !== 'undefined') return Scratch.INIT_DATA.LOGGED_IN_USER.model.id;
+			return prompt("Please enter your Scratch ID"); // TODO: Retrieve user ID from username via XHR
 		},
 		get_username: function() {
-			return Scratch ? Scratch.INIT_DATA.LOGGED_IN_USER.model.username : (ScratchAPI.credentials.username || (ScratchAPI.credentials.username = prompt("Username pls")));
+			if (typeof Scratch !== 'undefined') return Scratch.INIT_DATA.LOGGED_IN_USER.model.username;
+			return (ScratchAPI.credentials.username || (ScratchAPI.credentials.username = prompt("Username pls")));
 		},
 		get_password: function() {
 			return ScratchAPI.credentials.password || (ScratchAPI.credentials.password = prompt("Password pls"));
@@ -278,7 +284,6 @@ var ScratchAPI = {
 				x = _[i].getElementsByTagName("a")[0].href.match(/\d+/g);
 				acc.push(x[x.length-1]);
 			}
-				
 		},
 		get_page_names: function(dom,acc) {
 			for(var _=dom.querySelectorAll("span.title"),i=0;i<_.length;i++)
