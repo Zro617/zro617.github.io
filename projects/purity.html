@@ -407,7 +407,7 @@ function finish() {
 					mini[p].s.push(studios[s].id);
 			}
 		}
-		div_finishalt.querySelector("textarea").value = 'var j='+JSON.stringify(mini)+',p,s;for(p in j)for(s in j[p].s)$.ajax({type:"PUT",url:"https://scratch.mit.edu/site-api/projects/in/"+j[p].s[s]+"/remove/?pks="+j[p].p,async:false,success:function(){console.log("SUCCESS");},error:function(){console.log("FAILED");}});console.log("DONE");';
+		div_finishalt.querySelector("textarea").value = `var j=${JSON.stringify(mini)},p,s,x,y=0,z=0;for(p in j)for(s in j[p].s){x=new XMLHttpRequest();x.open("PUT","https://scratch.mit.edu/site-api/projects/in/"+j[p].s[s]+"/remove/?pks="+j[p].p,false);x.onload=function(){if(x.status=='200'){console.log("Removed project #"+j[p].p+" from studio #"+j[p].s[s]);y++;}else z++;};x.send();}console.log("Results: "+(y+z)+" total requests, "+y+" successful, "+z+" failed.");`;
 		_show(div_finishalt);
 	}
 }
