@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="//zro617.github.io/src/css/zro.css"></link>
 <style>
 .title {
-	font-family: "Segoe UI Light";
+	font-family: "Segoe UI Light",sans-serif;
 	text-align: center;
 }
 .pagewrapper {
@@ -25,20 +25,19 @@ h3 {
 	border-bottom-color: white;
 }
 .stage {
-	font-family: "Lucida Grande","DejaVu Sans",Verdana,Arial,sans-serif;
 	display: inline-block;
-	color: white;
-	border-style: outset;
-	border-width: 4px;
 	border-radius: 10px;
-	padding-top: 5px;
-	padding-bottom: 5px;
-	padding-left: 20px;
-	padding-right: 20px;
+	padding: 5px 20px;
 }
 .scratch {
-	font-family: "Helvetica Neue",Arial,sans-serif;
-	font-size: 13px;
+	font-family: "Helvetica Neue",Arial,sans-serif !important;
+	font-size: 13px !important;
+	color: black;
+	background-color: white;
+	width: 100%;
+	height: 200px;
+	padding: 2px;
+	overflow-y: scroll;
 }
 .list {
 	float: left;
@@ -57,33 +56,21 @@ h3 {
 .buttons {
 	clear: left;
 }
-.user {
+.user, .user-selected {
+	font-size: 14px;
+	text-align: center;
 	display: block;
 	border-style: outset;
 	border-width: 2px;
 	border-radius: 4px;
-	background-color: #ddd;
 	color: black;
-	text-align: center;
-	font-size: 14px;
 	cursor: grab;
 }
-.user-selected {
-	display: block;
-	border-style: outset;
-	border-width: 2px;
-	border-radius: 4px;
-	background-color: #999;
-	color: black;
-	text-align: center;
+.user {
+	background-color: #ddd;
 }
-.posts {
-	width: 100%;
-	height: 200px;
-	padding: 2px;
-	overflow-y: scroll;
-	background-color: white;
-	color: black;
+.user-selected {
+	background-color: #999;
 }
 .post {
 	border-style: inset;
@@ -97,36 +84,15 @@ h3 {
 	margin-top: 0px;
 	margin-bottom: 10px;
 }
-.bold {
-	font-weight: bold;
-}
-.init {
-	border-color: #c88330;
-	background-color: #c88330;
-}
-.select {
-	border-color: #5cb712;
-	background-color: #5cb712;
-}
-.finish {
-	border-color: #632D99;
-	background-color: #632D99;
-}
-.error {
-	border-color: #D42828;
-	background-color: #D42828;
-}
-.bb-quote-author {
-	font-weight: bold;
-	margin-top: 0px;
-	margin-bottom: 6px;
-	
+.commit {
+	font-family: "Consolas",monospace;
+	font-size: 12px;
 }
 input {
 	margin: 5px 0px;
 }
 input[type=text] {
-	width: 300px;
+	width: 300px !important;
 }
 blockquote {
 	margin: 10px 0px;
@@ -136,38 +102,46 @@ blockquote {
 	border-color: #ccc;
 	background-color: #f7f7f7;
 }
+.bb-quote-author {
+	font-size: 13px;
+	font-weight: bold;
+	margin-top: 0px;
+	margin-bottom: 6px;
+}
 textarea {
-	width: 100%;
-	height: 150px;
+	width: 100% !important;
+	height: 150px !important;
 }
 </style>
 </head>
 <body>
+	<header></header>
 	<div class="title">
 		<h1>census</h1>
 		<h2>find your supporters and opponents</h2>
+		<span class="commit">v2.0.1 | Updated June 19, 2016</span>
 	</div>
 	<div class="pagewrapper">
-		<div class="stage init" id="init">
+		<div class="stage sb events" id="init">
 			<h3 class="neat">init</h3>
 			<input type="text" class="block" id="topic" placeholder="topic ID or URL"></input>
 			<div class="buttons">
 				<button class="round-corners" onclick="start()">OK</button>
 			</div>
 		</div>
-		<div class="stage error" id="error">
+		<div class="stage sb undefined" id="error">
 			<h3 class="neat">epic fail</h3>
 			<p>This program enocountered a fatal error:</p>
-			<p class="msg">(No Error)</p>
+			<p class="msg 14pt">(No Error)</p>
 			<div class="buttons">
 				<button class="round-corners" onclick="init()">Redo</button>
 			</div>
 		</div>
-		<div class="stage select" id="select">
+		<div class="stage sb operators" id="select">
 			<h3 class="neat">drag and drop</h3>
-			<div class="msg scratch"></div>
-			<div class="bold scratch" id="title"></div>
-			<div class="posts">Click on a user to view their posts in this thread.</div>
+			<div class="msg"></div>
+			<div class="bolded" id="title"></div>
+			<div class="scratch">Click on a user to view their posts in this thread.</div>
 			<div class="list">
 				<h3 class="neat">Supporters</h3>
 				<div class="container" id="supporters" ondrop="drop(event)" ondragover="allowDrop(event)">
@@ -189,12 +163,13 @@ textarea {
 				<button class="round-corners" onclick="init()">Redo</button>
 			</div>
 		</div>
-		<div class="stage finish" id="finish">
+		<div class="stage sb custom" id="finish">
 			<h3 class="neat">yay!</h3>
 			<p>Copy the text below and paste it into your topic's post.</p>
 			<textarea class="code round-corners" readonly></textarea>
 		</div>
 	</div>
+	<footer></footer>
 </body>
 <script src="//zro617.github.io/src/js/boilerplate.js"></script>
 <script src="//zro617.github.io/src/js/draggable.js"></script>
