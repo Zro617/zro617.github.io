@@ -141,7 +141,7 @@ textarea {
 			<h3 class="neat">drag and drop</h3>
 			<div class="msg"></div>
 			<div class="bolded" id="title"></div>
-			<div class="scratch">Click on a user to view their posts in this thread.</div>
+			<div class="scratch"></div>
 			<div class="list">
 				<h3 class="neat">Supporters</h3>
 				<div class="container" id="supporters" ondrop="drop(event)" ondragover="allowDrop(event)">
@@ -180,6 +180,7 @@ div_select = document.querySelector("div#select"),
 div_finish = document.querySelector("div#finish"),
 div_error = document.querySelector("div#error"),
 title = div_select.querySelector("#title"),
+userposts = div_select.querySelector(".scratch"),
 list_supporters = document.querySelector("div#supporters"),
 list_nonsupporters = document.querySelector("div#non-supporters"),
 list_others = document.querySelector("div#others");
@@ -199,6 +200,7 @@ function init() {
     census = {};
 	thread = {};
 	op = "";
+	title.textContent = "";
 	_show(div_init);
 	_hide(div_error);
 	_hide(div_select);
@@ -206,12 +208,14 @@ function init() {
 	_clear(list_supporters);
 	_clear(list_nonsupporters);
 	_clear(list_others);
+	_clear(userposts);
 }
 
 function start() {
 	_hide(div_error);
 	_hide(div_finish);
-
+	title.textContent = "";
+	
 	// Get the topic ID
 	var topic = div_init.querySelector("input#topic").value;
 	if (!topic) return error("Topic not set.");
@@ -236,8 +240,6 @@ function start() {
 	
 	thread = {};
 	op = "";
-	title.textContent = "";
-	
 	
 	function validate(dom) {
 		return dom.getElementsByClassName("blockpost roweven firstpost").length > 0;
@@ -351,8 +353,7 @@ function showposts(user) {
 	div_select.querySelector("div#"+user).className = "user-selected";
 	selected = user;
 	
-	var postmsg = div_select.querySelector(".posts");
-	_clear(postmsg);
+	_clear(userposts);
 	
 	for (var post in thread[user]) {
 		var p = thread[user][post];
@@ -364,13 +365,15 @@ function showposts(user) {
 		link.innerHTML = "#"+p.id;
 		postwrapper.appendChild(link);
 		postwrapper.appendChild(p.content);
-		postmsg.appendChild(postwrapper);
+		userposts.appendChild(postwrapper);
 	}
 }
 
 function draganddrop() {
 	div_select.querySelector(".msg").innerHTML = "You can drag and drop users into other lists. Hit OK when you think the arrangement is accurate.";
 	selected = "";
+	_clear(userposts);
+	userposts.innerHTML = "Click on a user to view their posts in this thread";
 	
 	function user(u) {
 		var e = document.createElement("div");
