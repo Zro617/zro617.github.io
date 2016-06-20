@@ -158,7 +158,7 @@ textarea {
 				</div>
 			</div>
 			<div class="buttons">
-				<button class="round-corners" onclick="finish()">OK</button>
+				<button class="round-corners" onclick="update()">OK</button>
 				<button class="round-corners" onclick="draganddrop()">Reset</button>
 				<button class="round-corners" onclick="init()">Redo</button>
 			</div>
@@ -393,6 +393,17 @@ function draganddrop() {
 	for (var u in census.nonsupporters) list_nonsupporters.appendChild(user(census.nonsupporters[u]));
 	_clear(list_others);
 	for (var u in census.others) list_others.appendChild(user(census.others[u]));
+}
+
+function update() {
+	census = { supporters: [], nonsupporters: [], others: [] };
+	var users = list_supporters.children, u;
+	for (u in users) census.supporters.push(users[u].id);
+	users = list_nonsupporters.children;
+	for (u in users) census.nonsupporters.push(users[u].id);
+	users = list_others.children;
+	for (u in users) census.otehrs.push(users[u].id);
+	finish();
 }
 
 function finish() {
