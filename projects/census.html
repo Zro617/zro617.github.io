@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- are you reading my code? help me develop it @ https://github.com/Zro617/zro617.github.io -->
+<title>census - Zro617's Website</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="//zro617.github.io/src/css/zro.css"></link>
+<style>
+.title {
+	font-family: "Segoe UI Light";
+	text-align: center;
+}
+.pagewrapper {
+	width: 800px !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+h3 {
+	margin: 5px 0px;
+}
+.neat {
+	padding-bottom: 8px;
+	border-bottom-style: solid;
+	border-bottom-width: 2px;
+	border-bottom-color: white;
+}
+.stage {
+	font-family: "Lucida Grande","DejaVu Sans",Verdana,Arial,sans-serif;
+	display: inline-block;
+	color: white;
+	border-style: outset;
+	border-width: 4px;
+	border-radius: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+.scratch {
+	font-family: "Helvetica Neue",Arial,sans-serif;
+	font-size: 13px;
+}
+.list {
+	float: left;
+	display: block;
+	width: 200px;
+	margin: 0px 2px;
+}
+.container {
+	border-style: inset;
+	border-width: 4px;
+	border-radius: 8px;
+	margin: 10px 0px;
+	padding: 10px;
+	background-color: #2e2e2e;
+}
+.buttons {
+	clear: left;
+}
+.user {
+	display: block;
+	border-style: outset;
+	border-width: 2px;
+	border-radius: 4px;
+	background-color: #ddd;
+	color: black;
+	text-align: center;
+	font-size: 14px;
+	cursor: grab;
+}
+.user-selected {
+	display: block;
+	border-style: outset;
+	border-width: 2px;
+	border-radius: 4px;
+	background-color: #999;
+	color: black;
+	text-align: center;
+}
+.posts {
+	width: 100%;
+	height: 200px;
+	padding: 2px;
+	overflow-y: scroll;
+	background-color: white;
+	color: black;
+}
+.post {
+	border-style: inset;
+	border-width: 2px;
+	border-color: #aaa;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 2px;
+}
+.msg {
+	margin-top: 0px;
+	margin-bottom: 10px;
+}
+.bold {
+	font-weight: bold;
+}
+.init {
+	border-color: #c88330;
+	background-color: #c88330;
+}
+.select {
+	border-color: #5cb712;
+	background-color: #5cb712;
+}
+.finish {
+	border-color: #632D99;
+	background-color: #632D99;
+}
+.error {
+	border-color: #D42828;
+	background-color: #D42828;
+}
+.bb-quote-author {
+	font-weight: bold;
+	margin-top: 0px;
+	margin-bottom: 6px;
+	
+}
+input {
+	margin: 5px 0px;
+}
+input[type=text] {
+	width: 300px;
+}
+blockquote {
+	margin: 10px 0px;
+	padding: 10px 10px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ccc;
+	background-color: #f7f7f7;
+}
+textarea {
+	width: 100%;
+	height: 150px;
+}
+</style>
+</head>
+<body>
+	<div class="title">
+		<h1>census</h1>
+		<h2>find your supporters and opponents</h2>
+	</div>
+	<div class="pagewrapper">
+		<div class="stage init" id="init">
+			<h3 class="neat">init</h3>
+			<input type="text" class="block" id="topic" placeholder="topic ID or URL"></input>
+			<div class="buttons">
+				<button class="round-corners" onclick="start()">OK</button>
+			</div>
+		</div>
+		<div class="stage error" id="error">
+			<h3 class="neat">epic fail</h3>
+			<p>This program enocountered a fatal error:</p>
+			<p class="msg">(No Error)</p>
+			<div class="buttons">
+				<button class="round-corners" onclick="init()">Redo</button>
+			</div>
+		</div>
+		<div class="stage select" id="select">
+			<h3 class="neat">drag and drop</h3>
+			<div class="msg scratch"></div>
+			<div class="bold scratch" id="title"></div>
+			<div class="posts">Click on a user to view their posts in this thread.</div>
+			<div class="list">
+				<h3 class="neat">Supporters</h3>
+				<div class="container" id="supporters" ondrop="drop(event)" ondragover="allowDrop(event)">
+				</div>
+			</div>
+			<div class="list">
+				<h3 class="neat">Neutral</h3>
+				<div class="container" id="others" ondrop="drop(event)" ondragover="allowDrop(event)">
+				</div>
+			</div>
+			<div class="list">
+				<h3 class="neat">Non-Supporters</h3>
+				<div class="container" id="non-supporters" ondrop="drop(event)" ondragover="allowDrop(event)">
+				</div>
+			</div>
+			<div class="buttons">
+				<button class="round-corners" onclick="finish()">OK</button>
+				<button class="round-corners" onclick="draganddrop()">Reset</button>
+				<button class="round-corners" onclick="init()">Redo</button>
+			</div>
+		</div>
+		<div class="stage finish" id="finish">
+			<h3 class="neat">yay!</h3>
+			<p>Copy the text below and paste it into your topic's post.</p>
+			<textarea class="code round-corners" readonly></textarea>
+		</div>
+	</div>
+</body>
+<script src="//zro617.github.io/src/js/boilerplate.js"></script>
+<script src="//zro617.github.io/src/js/draggable.js"></script>
+<script>
+var census = {}, thread = {}, op = "", selected = "",
+div_init = document.querySelector("div#init"),
+div_select = document.querySelector("div#select"),
+div_finish = document.querySelector("div#finish"),
+div_error = document.querySelector("div#error"),
+title = div_select.querySelector("#title"),
+list_supporters = document.querySelector("div#supporters"),
+list_nonsupporters = document.querySelector("div#non-supporters"),
+list_others = document.querySelector("div#others");
+
+function _show(e) { e.style.display = "inline-block"; }
+function _hide(e) { e.style.display = "none"; }
+function _clear(e) { while(e.hasChildNodes())e.removeChild(e.firstChild); }
+
+
+function error(msg) {
+	div_error.querySelector(".msg").innerHTML = msg;
+	_show(div_error);
+	return 0;
+}
+
+function init() {
+    census = {};
+	thread = {};
+	op = "";
+	_show(div_init);
+	_hide(div_error);
+	_hide(div_select);
+	_hide(div_finish);
+	_clear(list_supporters);
+	_clear(list_nonsupporters);
+	_clear(list_others);
+}
+
+function start() {
+	_hide(div_error);
+	_hide(div_finish);
+
+	// Get the topic ID
+	var topic = div_init.querySelector("input#topic").value;
+	if (!topic) return error("Topic not set.");
+	if (topic.indexOf("topic/") > -1) {
+		try {
+			topic = topic.match(/\d+/)[0];
+		} catch (e) {
+			return error("Invalid URL.");
+		}
+	} else {
+		try {
+			topic = Number(topic);
+		} catch (e) {
+			return error("Invalid Topic ID.");
+		}
+	}
+	
+	var msg = div_select.querySelector(".msg");
+	msg.innerHTML = "Fetching posts. Please wait...";
+	_show(msg);
+	_show(div_select);
+	
+	thread = {};
+	op = "";
+	title.textContent = "";
+	
+	
+	function validate(dom) {
+		return dom.getElementsByClassName("blockpost roweven firstpost").length > 0;
+	}
+	function parse(dom) {
+		var buffer = dom.getElementsByClassName("blockpost roweven firstpost"),p,id,username,content;
+		for (var p=0;p<buffer.length;p++) {
+			// Extract post details
+			id = buffer[p].id.match(/\d+/)[0];
+			username = buffer[p].querySelector("a.username").innerHTML;
+			content = buffer[p].querySelector(".post_body_html");
+			
+			// Add post to thread dataset
+			if (typeof thread[username] === "undefined") thread[username] = [];
+			thread[username].push({id:id,content:content});
+			
+			// Set original poster username
+			if (!op) op = username;
+		}
+	}
+	function process() {
+		msg.innerHTML = "Processing...";
+		census = { supporters: [], nonsupporters: [], others: [] };
+		
+		var regex = {};
+		regex.agree = /((?:as per )?this|(?:i )?agreed?|\^+|\+\d+|yes)/gi;
+		regex.support = /(agree|support|62807079593)(?![\w\s]*\?)/gi;
+		regex.nosupport = /((?:no |i d(?:on't |o not |is))(?:support|agree))(?![\w\s]*\?)/gi;
+		
+		function classify(text) {
+			if (regex.nosupport.test(text)) {
+				return 1;
+			} else if (regex.support.test(text)) {
+				return 2;
+			} else if (regex.agree.test(text)) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+		
+		function readpost(post) {
+			if (typeof post === "undefined") return 0;
+			var parts = post.childNodes,
+				p = parts.length-1,
+				postclass = 0,
+				partclass = 0;
+			while (p >= 0) {
+				if (parts[p].nodeName === "blockquote") {
+					partclass = !postclass?-1:0;
+				} else {
+					partclass = classify(parts[p].textContent);
+					if (partclass === -1) p--;
+				}
+				if (partclass === -1) partclass = readpost(parts[p]);
+				postclass = partclass || postclass;
+				p--;
+			}
+			return postclass;
+		}
+		
+		var user, posts, p, verdict;
+		for (user in thread) {
+			
+			if (user === op) {
+				// TODO: Is this kinda pointless?
+				//census.supporters.push(user);
+				continue;
+			}
+			verdict = 0;
+			posts = thread[user];
+			for (p in posts) verdict = readpost(posts[p].content) || verdict;
+			switch (verdict) {
+				case 0: census.others.push(user);break;
+				case 1: census.nonsupporters.push(user);break;
+				case 2: census.supporters.push(user);break;
+			}
+		}
+		draganddrop();
+	}
+	function get(id,page) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET","https://scratch.mit.edu/discuss/topic/"+id+"/?page="+page,true);
+		xhr.responseType = "document";
+		xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
+		xhr.onload = function() {
+			if (this.status == 200) {
+				if (!title.textContent) {
+					title.textContent = "\""+this.response.querySelector(".linkst > ul").querySelectorAll("li")[2].textContent.substring(2)+"\"";
+				}
+				// The response is not always truthful...
+				if (validate(xhr.response)) {
+					msg.innerHTML = "Fetching posts. Please wait... (Pages retrieved: "+page+")";
+					parse(xhr.response);
+					get(id,page+1);
+				} else {
+					process();
+				}
+			} else {
+				error("The topic does not exist.");
+			}
+		};
+		xhr.send();
+	}
+	get(topic,1);
+}
+
+function showposts(user) {
+	// highlight this user
+	if (selected) div_select.querySelector("div#"+selected).className = "user";
+	div_select.querySelector("div#"+user).className = "user-selected";
+	selected = user;
+	
+	var postmsg = div_select.querySelector(".posts");
+	_clear(postmsg);
+	
+	for (var post in thread[user]) {
+		var p = thread[user][post];
+		var postwrapper = document.createElement("div");
+		postwrapper.setAttribute("class","post");
+		var link = document.createElement("a");
+		link.setAttribute("class","block");
+		link.setAttribute("href","https://scratch.mit.edu/discuss/post/"+p.id+"/");
+		link.innerHTML = "#"+p.id;
+		postwrapper.appendChild(link);
+		postwrapper.appendChild(p.content);
+		postmsg.appendChild(postwrapper);
+	}
+}
+
+function draganddrop() {
+	div_select.querySelector(".msg").innerHTML = "You can drag and drop users into other lists. Hit OK when you think the arrangement is accurate.";
+	selected = "";
+	
+	function user(u) {
+		var e = document.createElement("div");
+		e.setAttribute("class","user");
+		e.setAttribute("id",u);
+		e.setAttribute("onclick","showposts(this.id)");
+		e.setAttribute("draggable",true);
+		e.setAttribute("ondragstart","drag(event)");
+		e.setAttribute("style","cursor:grab");
+		e.innerHTML = u;
+		return e;
+	}
+	
+	_clear(list_supporters);
+	for (var u in census.supporters) list_supporters.appendChild(user(census.supporters[u]));
+	_clear(list_nonsupporters);
+	for (var u in census.nonsupporters) list_nonsupporters.appendChild(user(census.nonsupporters[u]));
+	_clear(list_others);
+	for (var u in census.others) list_others.appendChild(user(census.others[u]));
+}
+
+function finish() {
+	var text = "", u;
+	text += "[b]Supporters ("+census.supporters.length+")[/b]\n[list]\n";
+	for (u=0;u<census.supporters.length;u++)text+="[*]"+census.supporters[u]+"\n";
+	text += "[/list]\n";
+	text += "[b]Non-Supporters ("+census.nonsupporters.length+")[/b]\n[list]\n";
+	for (u=0;u<census.nonsupporters.length;u++)text+="[*]"+census.nonsupporters[u]+"\n";
+	text += "[/list]\n";
+	
+	div_finish.querySelector("textarea").value = text;
+	_show(div_finish);
+}
+
+window.onload = init;
+</script>
+</html>
