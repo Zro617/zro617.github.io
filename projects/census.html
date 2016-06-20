@@ -398,11 +398,11 @@ function draganddrop() {
 function update() {
 	census = { supporters: [], nonsupporters: [], others: [] };
 	var users = list_supporters.children, u;
-	for (u in users) census.supporters.push(users[u].id);
+	for (u=0;u<users.length;u++) census.supporters.push(users[u].id);
 	users = list_nonsupporters.children;
-	for (u in users) census.nonsupporters.push(users[u].id);
+	for (u=0;u<users.length;u++) census.nonsupporters.push(users[u].id);
 	users = list_others.children;
-	for (u in users) census.others.push(users[u].id);
+	for (u=0;u<users.length;u++) census.others.push(users[u].id);
 	finish();
 }
 
