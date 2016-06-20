@@ -6,11 +6,17 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" href="//zro617.github.io/src/css/zro.css"></link>
 		<style>
-		.title, .pagewrapper {
+		.title {
 			font-family: "Segoe UI Light",sans-serif;
+			text-align: center;
+		}
+		.pagewrapper {
 			width: 600px !important;
 			margin-left: auto !important;
 			margin-right: auto !important;
+		}
+		h3 {
+			margin: 5px 0px;
 		}
 		h3.neat {
 			padding-bottom: 8px;
@@ -18,38 +24,10 @@
 			border-bottom-width: 4px;
 			border-bottom-color: white;
 		}
-		div.stage {
-			font-family: "Lucida Grande","DejaVu Sans",Verdana,Arial,sans-serif;
+		.stage {
 			display: inline-block;
-			color: white;
-			border-style: outset;
-			border-width: 4px;
 			border-radius: 10px;
-			shadow: 12px 12px;
-			padding-top: 5px;
-			padding-bottom: 5px;
-			padding-left: 20px;
-			padding-right: 20px;
-		}
-		.init {
-			border-color: #c88330;
-			background-color: #c88330;
-		}
-		.select {
-			border-color: #5cb712;
-			background-color: #5cb712;
-		}
-		.finish {
-			border-color: #CC5B22;
-			background-color: #CC5B22;
-		}
-		.finish-alt {
-			border-color: #632D99;
-			background-color: #632D99;
-		}
-		.error {
-			border-color: #D42828;
-			background-color: #D42828;
+			padding: 5px 20px;
 		}
 		ul.projects {
 			padding-left: 0px;
@@ -74,7 +52,7 @@
 		</div>
 		<div class="pagewrapper">
 			<div class="main">
-				<div class="stage init" id="init" onsubmit="#">
+				<div class="stage sb events" id="init" onsubmit="#">
 					<h3 class="neat">init</h3>
 					<input type="text" class="block" id="username" value="" placeholder="username" title="your Scratch username"></input>
 					<input type="password" class="block" id="password" value="" placeholder="password (optional)" title="your Scratch password"></input>
@@ -82,13 +60,13 @@
 					<button class="block" onclick="start()">OK</button>
 					<input type="checkbox" id="manual-selection"/><span>let me choose</span>
 				</div><br>
-				<div class="stage error" id="error" onsubmit="init()">
+				<div class="stage sb undefined" id="error" onsubmit="init()">
 					<h3 class="neat">epic fail</h3>
 					<p>This program encountered a fatal error:</p>
 					<p class="msg">(No Error)</p>
 					<button onclick="init()">Redo</button>
 				</div><br>
-				<div class="stage select" id="select">
+				<div class="stage sb operators" id="select">
 					<h3 class="neat">select</h3>
 					<p class="msg"></p>
 					<ul class="projects">
@@ -99,7 +77,7 @@
 					<button onclick="selectall(false)">Deselect All</button>
 					<button onclick="init()">Redo</button>
 				</div><br>
-				<div class="stage finish-alt" id="finish-alt" onsubmit="init()">
+				<div class="stage sb sensing" id="finish-alt" onsubmit="init()">
 					<h3 class="neat">almost there...</h3>
 					<p>Because of CSRF verification issues, you will have to do the following:<br>
 					  1. Copy the code below<br>
@@ -120,9 +98,9 @@
 						
 					</div>
 				</div><br>
-				<div class="stage finish" id="finish" onsubmit="init()">
+				<div class="stage sb custom" id="finish" onsubmit="init()">
 					<h3 class="neat">epic win</h3>
-					<pre class="log smalltext"></pre>
+					<pre class="log 9pt"></pre>
 					<p>A total of <span id="studios-removed-count">0</span> studios were removed from <span id="projects-cleansed-count">0</span> projects!
 					</p>
 					<button onclick="init()">Redo</button>
