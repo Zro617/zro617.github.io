@@ -119,7 +119,7 @@ textarea {
 	<div class="title">
 		<h1>census</h1>
 		<h2>find your supporters and opponents</h2>
-		<span class="commit">v2.0.3 | Updated June 21, 2016</span>
+		<span class="commit">v2.0.4 | Updated June 21, 2016</span>
 	</div>
 	<div class="pagewrapper">
 		<div class="stage sb events" id="init">
@@ -269,7 +269,7 @@ function start() {
 		
 		var regex = {};
 		regex.agree = /((?:as per )?this|(?:i )?agreed?|\^+|\+\d+|yes)/gi;
-		regex.support = /(?:i )?(agree|support|62807079593)(?![\w\s]*\?)/gi;
+		regex.support = /((?:no |don't |do not |dis|un)(?:support|agree))(?![\w\s]*\?)/gi;
 		regex.nosupport = /((?:no |i d(?:on't |o not |is))(?:support|agree))(?![\w\s]*\?)/gi;
 		
 		function classify(text) {
