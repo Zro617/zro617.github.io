@@ -119,7 +119,7 @@ textarea {
 	<div class="title">
 		<h1>census</h1>
 		<h2>find your supporters and opponents</h2>
-		<span class="commit">v2.0.1 | Updated June 19, 2016</span>
+		<span class="commit">v2.0.2 | Updated June 21, 2016</span>
 	</div>
 	<div class="pagewrapper">
 		<div class="stage sb events" id="init">
@@ -260,7 +260,7 @@ function start() {
 			if (!op) op = username;
 		}
 		if (!title.textContent && op) {
-			title.textContent = "\""+this.response.querySelector(".linkst > ul").querySelectorAll("li")[2].textContent.substring(2)+"\" by "+op;
+			title.textContent = "\""+dom.querySelector(".linkst > ul").querySelectorAll("li")[2].textContent.substring(2)+"\" by "+op;
 		}
 	}
 	function process() {
