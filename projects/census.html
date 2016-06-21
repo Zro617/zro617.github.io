@@ -268,9 +268,9 @@ function start() {
 		census = { supporters: [], nonsupporters: [], others: [] };
 		
 		var regex = {};
-		regex.agree = /((?:as per )?this|(?:i )?agreed?|\^+|\+\d+|yes)/gi;
-		regex.support = /((?:no |don't |do not |dis|un)(?:support|agree))(?![\w\s]*\?)/gi;
-		regex.nosupport = /((?:no |i d(?:on't |o not |is))(?:support|agree))(?![\w\s]*\?)/gi;
+		regex.agree = /((?:as per )?this|(?:i )?agreed?|\^+|\+\d+|yes)(?![\w\s]*\?)/gi;
+		regex.support = /(?:i )?(agree|support|62807079593)(?![\w\s]*\?)/gi;
+		regex.nosupport = /((?:no |don't |do not |dis|un)(?:support|agree))(?![\w\s]*\?)/gi;
 		
 		function classify(text) {
 			if (regex.nosupport.test(text)) {
