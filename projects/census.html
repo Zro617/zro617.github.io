@@ -259,6 +259,9 @@ function start() {
 			// Set original poster username
 			if (!op) op = username;
 		}
+		if (!title.textContent && op) {
+			title.textContent = "\""+this.response.querySelector(".linkst > ul").querySelectorAll("li")[2].textContent.substring(2)+"\" by "+op;
+		}
 	}
 	function process() {
 		msg.innerHTML = "Processing...";
@@ -266,7 +269,7 @@ function start() {
 		
 		var regex = {};
 		regex.agree = /((?:as per )?this|(?:i )?agreed?|\^+|\+\d+|yes)/gi;
-		regex.support = /(agree|support|62807079593)(?![\w\s]*\?)/gi;
+		regex.support = /(?:i )?(agree|support|62807079593)(?![\w\s]*\?)/gi;
 		regex.nosupport = /((?:no |i d(?:on't |o not |is))(?:support|agree))(?![\w\s]*\?)/gi;
 		
 		function classify(text) {
@@ -289,7 +292,7 @@ function start() {
 				partclass = 0;
 			while (p >= 0) {
 				if (parts[p].nodeName === "blockquote") {
-					partclass = !postclass?-1:0;
+					partclass = -1;
 				} else {
 					partclass = classify(parts[p].textContent);
 					if (partclass === -1) p--;
@@ -303,19 +306,17 @@ function start() {
 		
 		var user, posts, p, verdict;
 		for (user in thread) {
-			
-			if (user === op) {
-				// TODO: Is this kinda pointless?
-				//census.supporters.push(user);
-				continue;
-			}
+			if (user === op) continue;
 			verdict = 0;
-			posts = thread[user];
-			for (p in posts) verdict = readpost(posts[p].content) || verdict;
+			posts = thread[user], p = posts.length-1;
+			while (p >= 0 && verdict === 0) {
+				verdict = readpost(posts[p].content) || verdict;
+				p--;
+			}
 			switch (verdict) {
-				case 0: census.others.push(user);break;
 				case 1: census.nonsupporters.push(user);break;
 				case 2: census.supporters.push(user);break;
+				default: census.others.push(user);break;
 			}
 		}
 		draganddrop();
@@ -327,9 +328,6 @@ function start() {
 		xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
 		xhr.onload = function() {
 			if (this.status == 200) {
-				if (!title.textContent) {
-					title.textContent = "\""+this.response.querySelector(".linkst > ul").querySelectorAll("li")[2].textContent.substring(2)+"\"";
-				}
 				// The response is not always truthful...
 				if (validate(xhr.response)) {
 					msg.innerHTML = "Fetching posts. Please wait... (Pages retrieved: "+page+")";
