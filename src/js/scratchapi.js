@@ -253,10 +253,10 @@ var ScratchAPI = {
 		
 		if (body.length) this.headers["Content-Length"] = body.length;
 		if (type=="PUT"||type=="POST") {
-			this.headers["X-CSRFToken"] = this.session.get_csrf();
-			this.headers["Cookie"] = "scratchlanguage=en;"
-			+"scratchcsrftoken="+this.credentials.csrf+";"
-			+"scratchsessionid="+this.credentials.session+";";
+			if (this.credentials.csrf) this.headers["X-CSRFToken"] = this.credentials.csrf;
+			this.headers["Cookie"] = "scratchlanguage=en;";
+			if (this.credentials.csrf) this.headers["Cookie"] += this.credentials.csrf+";";
+			if (this.credentials.session) this.headers["Cookie"] += this.credentials.session+";";
 		}
 
 		var headers = Object.keys(this.headers);
