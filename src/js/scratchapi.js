@@ -187,28 +187,26 @@ var ScratchAPI = {
 	},
 	session: {
 		login: function(u,p) {
-			u || (u = prompt("Username"));
-			p || (p = prompt("Password"));
-			var c = "", s = "";
-			if (u && p) {
+			ScratchAPI.credentials.username = (u || ScratchAPI.credentials.username || prompt("Username"));
+			ScratchAPI.credentials.password = (p || ScratchAPI.credentials.password || prompt("Password"));
+			ScratchAPI.credentials.csrf = "";
+			ScratchAPI.credentials.session = "";
+			if (ScratchAPI.credentials.username && ScratchAPI.credentials.password) {
 				var args = {
-					body: { username:u, password:p },
+					body: {
+						username:ScratchAPI.credentials.username,
+					        password:ScratchAPI.credentials.password
+					},
 					success: function() {
-						s = this.response.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1];
-						c = this.response.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1];
+						ScratchAPI.credentials.csrf = this.response.cookie.match(/scratchcsrftoken=([A-Za-z0-9]+)/)[1];
+						ScratchAPI.credentials.session = this.response.cookie.match(/scratchsessionid=([A-Za-z0-9]+)/)[1];
 					},
 					fail: function() {
 						alert("Login failed");
-						u = "", p = "";
 					}
 				};
 				ScratchAPI.request(ScratchAPI.hrefs.users.login,args,false); 
 			}
-			// Update credentials
-			ScratchAPI.credentials.username = u;
-			ScratchAPI.credentials.password = p;
-			ScratchAPI.credentials.csrf = c;
-			ScratcHAPI.credentials.session = s;
 			
 			return ScratchAPI.credentials;
 		},
@@ -236,10 +234,10 @@ var ScratchAPI = {
 		},
 		get_username: function() {
 			if (typeof Scratch !== 'undefined') return Scratch.INIT_DATA.LOGGED_IN_USER.model.username;
-			return (ScratchAPI.credentials.username || (ScratchAPI.credentials.username = prompt("Username pls")));
+			return (ScratchAPI.credentials.username = (ScratchAPI.credentials.username || prompt("Username pls")));
 		},
 		get_password: function() {
-			return ScratchAPI.credentials.password || (ScratchAPI.credentials.password = prompt("Password pls"));
+			return ScratchAPI.credentials.password = (ScratchAPI.credentials.password || prompt("Password pls"));
 		}
 	},
 	request: function(req,args,async) {
@@ -257,8 +255,8 @@ var ScratchAPI = {
 		if (type=="PUT"||type=="POST") {
 			this.headers["X-CSRFToken"] = this.session.get_csrf();
 			this.headers["Cookie"] = "scratchlanguage=en;"
-			+"scratchcsrftoken="+this.session.get_csrf()+";"
-			+"scratchsessionid="+this.session.get_sessionid()+";";
+			+"scratchcsrftoken="+this.credentials.csrf+";"
+			+"scratchsessionid="+this.credentials.session+";";
 		}
 
 		var headers = Object.keys(this.headers);
