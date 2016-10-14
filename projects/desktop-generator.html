@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" charset="utf-8"/>
+		<title>Simple Desktop Background Generator</title>
+	</head>
+	<body>
+		<canvas id="output" style="margin:0;padding:0"></canvas>
+		<script src="src/js/color-gradient.js"></script>
+		<script>
+const TAU = 2 * Math.PI;
+
+let Canvas = document.querySelector("#output");
+let Pen = Canvas.getContext("2d");
+Canvas.width = screen.width;
+Canvas.height = screen.height;
+
+class Point {
+	constructor(x,y) {
+		this.x = (typeof x == "number") ? x : ~~(screen.width * Math.random());
+		this.y = (typeof y == "number") ? y : ~~(screen.height * Math.random());
+	}
+	constraint(xmin,ymin,xmax,ymax) {
+		xmin = xmin || 0;
+		ymin = ymin || 0;
+		xmax = xmax || screen.width;
+		ymax = ymax || screen.height;
+		this.x = Math.min(Math.max(this.x,xmin),xmax);
+		this.y = Math.min(Math.max(this.y,ymin),ymax);
+	}
+	transform(a,offset) {
+		offset = offset || new Point(0,0);
+		let dx = this.x - offset.x,
+		    dy = this.y - offset.y;
+		return new Point(offset.x + dx * Math.cos(a) + dy * Math.sin(a),
+		                 offset.y + dy * Math.cos(a) - dx * Math.sin(a));
+	}
+	add(p) {
+		return new Point(this.x + p.x, this.y + p.y);
+	}
+	draw() {
+		Pen.fillStyle = "black";
+		Pen.fillRect(x,y,1,1);
+	}
+}
+
+class Line {
+	constructor(x1,y1,x2,y2) {
+		if (typeof x1 === "object" && typeof y1 === "object") {
+			this.start = x1;
+			this.end = y1;
+		} else {
+			this.start = new Point(x1,y1);
+			this.end = new Point(x2,y2);
+		}
+		this.color = new Color().random();
+	}
+	get length() {
+		return Math.sqrt(Math.pow(this.end.x - this.start.x,2) + 
+		                 Math.pow(this.end.y - this.start.y,2));
+	}
+	interpolate(t) {
+		return new Point(this.start.x * (1-t) + this.end.x * t,
+		                 this.start.y * (1-t) + this.end.y * t);
+	}
+	cull() {
+		let tmp = new Point(this.start.x,this.start.y);
+		let onscreen = tmp.x >= 0 && tmp.x <= screen.width && tmp.y >= 0 && tmp.y <= screen.height;
+		if (!onscreen) {
+			let dx = this.end.x - this.start.x,
+			    dy = this.end.y - this.start.y;
+			if (tmp.x > screen.width) {
+				
+			}
+		}
+		return this;
+	}
+	draw() {
+		Pen.strokeStyle = this.color.rgb;
+		Pen.moveTo(this.start.x,this.start.y);
+		Pen.lineTo(this.end.x,this.end.y);
+		Pen.stroke();
+	}
+}
+
+class HorizontalLine extends Line {
+	constructor(y,x1,x2) {
+	  y = y || (screen.height * Math.random());
+		x1 = x1 || (screen.width * Math.random());
+		x2 = x2 || (screen.width * Math.random());
+		super(x1,y,x2,y);
+	}
+}
+
+class VerticalLine extends Line {
+	constructor(x,y1,y2) {
+		x = x || (screen.width * Math.random());
+		y1 = y1 || (screen.height * Math.random());
+		y2 = y2 || (screen.height * Math.random());
+		super(x,y1,x,y2);
+	}
+}
+
+class Polygon {
+	constructor() {
+		this.points = [...arguments];
+		this.innerColor = new Color().random();
+		this.outerColor = new Color().random();
+	}
+	draw() {
+		Pen.strokeStyle = this.outerColor.rgb;
+		Pen.fillStyle = this.innerColor.rgb;
+		
+		Pen.beginPath();
+		let first = true;
+		for (let p of this.points) {
+			if (first) {
+				Pen.moveTo(p.x,p.y);
+				first = false;
+			} else {
+				Pen.lineTo(p.x,p.y);
+			}
+		}
+		Pen.closePath();
+		Pen.fill();
+		Pen.stroke();
+	}
+}
+
+class RegularPolygon extends Polygon {
+	constructor(x,y,sides,radius,tilt) {
+		super();
+		x = x || ~~(screen.width * Math.random());
+		y = y || ~~(screen.height * Math.random());
+		sides = sides || ~~(3 + 5 * Math.random());
+		radius = radius || (200 * Math.random());
+		tilt = tilt || (TAU * Math.random());
+		for (let s=0,t=tilt,dt=TAU/sides;s<sides;s++,t+=dt) {
+			this.points.push(new Point(x+radius*Math.sin(t),y+radius*Math.cos(t)));
+		}
+	}
+}
+
+class Triangle extends RegularPolygon {
+	constructor(x,y,radius,tilt) {
+		super(x,y,3,radius,tilt);
+	}
+}
+
+class Square extends RegularPolygon {
+	constructor(x,y,radius,tilt) {
+		super(x,y,4,radius,tilt+TAU/4);
+	}
+}
+
+class Pentagon extends RegularPolygon {
+	constructor(x,y,radius,tilt) {
+		super(x,y,5,radius,tilt);
+	}
+}
+
+class Hexagon extends RegularPolygon {
+	constructor(x,y,radius,tilt) {
+		super(x,y,6,radius,tilt+TAU/12);
+	}
+}
+
+class Wave {
+	constructor(x,y,amplitude,frequency,phase,tilt) {
+		this.x = x || ~~(screen.width * Math.random());
+		this.y = y || ~~(screen.height * Math.random());
+		this.amplitude = amplitude || (200 * Math.random());
+		this.frequency = frequency || (69 * Math.random());
+		this.phase = phase || (TAU * Math.random());
+		this.tilt = tilt || (TAU * Math.random());
+		
+		this.color = new Color().random();
+	}
+	draw() {
+		let longest = Math.max(screen.width,screen.height);
+		let center = new Point(this.x,this.y);
+		let line = new Line(new Point(this.x-longest,this.y).transform(this.tilt,center),
+		                    new Point(this.x+longest,this.y).transform(this.tilt,center)).cull();
+		let distance = line.length;
+		
+		for (let t=0,first=true,i,intensity,tmp;t<distance;t++) {
+			i = t / distance;
+			intensity = this.amplitude * Math.sin(this.phase + TAU * this.frequency * i);
+			tmp = line.interpolate(i).add(new Point(0,intensity).transform(this.tilt));
+			if (first) {
+				Pen.moveTo(tmp.x,tmp.y);
+				first = false;
+			} else {
+				Pen.lineTo(tmp.x,tmp.y);
+			}
+		}
+		Pen.strokeStyle = this.color.rgb;
+		Pen.stroke();
+	}
+}
+
+function gauss(x,a,b,c) {
+	return a * Math.exp(((x-b)*(x-b))/(-2 * c * c));
+}
+
+function shapes(x){
+	if (x < 1) return;
+	
+	var roll;
+	while(x--) {
+		Pen.lineWidth = ~~(1 + 10 * Math.random());
+		roll = ~~(20 * Math.random());
+		if (roll < 5) new Line().draw();
+		else if (roll < 9) new HorizontalLine().draw();
+		else if (roll < 13) new VerticalLine().draw();
+		else if (roll < 18) new RegularPolygon().draw();
+		else new Wave().draw();
+	}
+}
+
+// Make a interesting backdrop
+(function(){
+	var nodes = [], dists = [], closest, total;
+	
+	var p = ~~(1 + 30 * Math.random());
+	while (p--) {
+		nodes.push(new Point());
+		nodes[nodes.length-1].color = new Color().random();
+		dists.push(0);
+	}
+	
+	var pixel = new Point();
+	pixel.color = new Color();
+	
+	function* fillBackdrop() {
+		for (pixel.y=0;pixel.y<Canvas.height;pixel.y++) {
+			for (pixel.x=0;pixel.x<Canvas.width;pixel.x++) {
+				pixel.color.red = pixel.color.green = pixel.color.blue = 0;
+				closest = 99999; total = 0;
+				for (p=0;p<nodes.length;p++) closest = Math.min(closest,dists[p] = new Line(pixel,nodes[p]).length);
+				for (p=0;p<nodes.length;p++) total += dists[p] = (dists[p] == 0) ? 1 : gauss(dists[p]/closest,1,1,0.85);
+				for (p=0;p<nodes.length;p++) dists[p] /= total;
+				for (p=0;p<nodes.length;p++) {
+					pixel.color.r += nodes[p].color.r * dists[p];
+					pixel.color.g += nodes[p].color.g * dists[p];
+					pixel.color.b += nodes[p].color.b * dists[p];
+				}
+				pixel.color.red = pixel.color.r;
+				pixel.color.green = pixel.color.g;
+				pixel.color.blue = pixel.color.b;
+				
+				Pen.fillStyle = pixel.color.rgb;
+				Pen.fillRect(pixel.x,pixel.y,1,1);
+			}
+			yield 0;
+		}
+		yield 1;
+	}
+	
+	let bgFiller = fillBackdrop();
+	let done = 0;
+	function fill() {
+		done = bgFiller.next().value;
+		if (done) return shapes(~~prompt("How much random stuff on screen?") || 0);
+		else window.requestAnimationFrame(fill);
+	}
+	fill();
+})();
+		</script>
+	</body>
+</html>
