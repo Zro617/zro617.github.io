@@ -25,7 +25,6 @@ function printTableData(data,header) {
 		// add padding between item and column divisions
 		 widths[col] += 2
 	}
-	
 	function strfill(width,ch,string,offset) {
 		offset = offset || 0
 		let str = (new Array(Math.max(width,string.length))).fill(ch||" ")
@@ -40,14 +39,12 @@ function printTableData(data,header) {
 		temp.push(strfill(widths[col]," ",header[col],1))
 	}
 	table += temp.join("|") + "\n"
-	
 	// create border separating header from data
 	temp = []
 	for (let col=0;col<header.length;col++) {
 		temp.push(strfill(widths[col],"-",""))
 	}
 	table += temp.join("+") + "\n"
-	
 	// create data text
 	for (let row=col=0;row<data.length;row++) {
 		temp = []
@@ -56,7 +53,6 @@ function printTableData(data,header) {
 		}
 		table += temp.join("|") + "\n"
 	}
-	
 	console.log(table)
 }
 
@@ -70,7 +66,6 @@ function SlopeField(fn,xmin,xmax,ymin,ymax) {
 	if (!xmax) xmax = 10
 	if (!ymin) ymin = -10
 	if (!ymax) ymax = 10
-	
 	let sf = ""
 	for (let y=ymin;y<=ymax;y++) {
 		for (let x=xmin;x<=xmax;x++) {
@@ -171,4 +166,33 @@ Table data:
 	Trapezoid  = ${trap_sum}
 	Simpson    = ${(n%2==0)?simp_sum:"(not applicable)"}
 `)
+}
+
+function Decay(C,k,t) {
+  return C * Math.exp(k * t)
+}
+
+function HalfLifeDecayRate(hl) {
+	return Math.log(1/2) / h1
+}
+
+function TimeToDouble(rate) {
+	return Math.LN2 / rate
+}
+
+class Mass {
+	constructor(x,m) {
+		this.distance = x
+		this.mass = m
+		this.moment = this.distance * this.mass
+	}
+}
+
+function findFulcrum(masses) {
+	let totalMass = 0, totalMoment = 0
+	for (let m of masses) {
+		totalMass += m.mass
+		totalMoment += m.moment
+	}
+	return totalMoment / totalMass
 }
