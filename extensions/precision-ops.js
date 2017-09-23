@@ -128,7 +128,7 @@ function register(extensionName) {
     ext._eq   = BigNum.eq
     ext._neq  = BigNum.neq
 
-    ext._prop = function (property, x) {
+    ext._prop = function (x, property) {
         switch (property.toLowerCase()) {
             case 'nan':
                 return BigNum.isNaN(x)
