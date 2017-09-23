@@ -116,7 +116,7 @@ function register(extensionName) {
     ext._idiv = BigNum.idiv
     ext._mod  = BigNum.mod
     ext._pow  = BigNum.pow
-    ext._nrt  = BigNum.nrt
+    ext._nrt  = function (n,x) { return BigNum.nrt(x,n) }
     ext._fact = BigNum.fct
     ext._rnd  = BigNum.round
     ext._max  = BigNum.max
