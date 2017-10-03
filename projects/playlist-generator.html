@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" charset="utf-8"/>
+		<title>YouTube Playlist Generator</title>
+		<style>
+		html {
+			font-family: "Verdana", sans-serif;
+		}
+		body {
+			width: 1220px;
+			margin: auto;
+		}
+		.options {
+			text-align: center;
+		}
+		ul {
+			width: 100%;
+			list-style-position: outside;
+			padding: 0px;
+			font-size: 12px;
+		}
+		.artists {
+			margin: 0px;
+			list-style-type: none;
+		}
+		.albums, .songs {
+			list-style-type: number;
+		}
+		li {
+			margin: 0px;
+			border: none;
+			padding: 5px;
+		}
+		.artist {
+			margin-left: 0px;
+			background-color: #eee;
+			list-style-type: none;
+		}
+		.album {
+			background-color: #ccc;
+			list-style-type: number;
+		}
+		.song {
+			background-color: #aaa;
+			list-style-type: number;
+		}
+		.song:hover {
+			background-color: #bbb;
+		}
+		.thing-header {
+			height: 28px;
+		}
+		.thing-body {
+			max-height: 600px;
+			overflow-y: scroll;
+			transition: max-height 200ms ease-out;
+			margin-left: 22px;
+		}
+		.thing-body-last {
+			overflow: hidden;
+		}
+		.thing-footer {
+			height: 28px;
+		}
+		button {
+			margin: 0;
+			font-family: inherit;
+			border: none;
+			padding: 4px 12px;
+		}
+		.collapse {
+			padding: 4px 8px;
+			background-color: transparent;
+			font-weight: bold;
+			float: right;
+		}
+		.collapse:hover {
+			background-color: #aaa;
+			color: white;
+		}
+		.add {
+			background-color: transparent;
+			font-weight: bold;
+		}
+		.add:hover {
+			color: white;
+			background-color: #5a5;
+		}
+		.remove, .move {
+			padding: 4px 8px;
+			background-color: transparent;
+			font-weight: bold;
+			float: right;
+		}
+		.remove:hover {
+			background-color: red;
+			color: white;
+		}
+		.move:hover {
+			background-color: #77f;
+			color: white;
+		}
+		.link {
+			margin-left: 22px;
+			background-color: transparent;
+			font-weight: bold;
+		}
+		.link:hover {
+			background-color: lightblue;
+		}
+		.main {
+			font-size: 18px;
+			width: 150px;
+			margin: 5px;
+		}
+		.main:hover {
+			box-shadow: 2px 2px 2px 2px #aaa;
+		}
+		.youtube-link {
+			margin-left: 10px;
+			font-size: 14px;
+			text-decoration: none;
+		}
+		.youtube-link:hover {
+			text-decoration: underline;
+		}
+		input {
+			font-family: inherit;
+		}
+		input[type=checkbox] {
+			margin: 5px;
+		}
+		input[type=textbox] {
+			margin: 2px auto;
+			border: none;
+			padding: 4px;
+			width: 300px;
+		}
+		table {
+			border-collapse: collapse;
+		}
+		td, th {
+			border: 1px solid #999;
+			padding: 0.5rem;
+			text-align: left;
+		}
+		</style>
+		<script>
+var Playlist = []
+var PlaylistURL = ''
+
+function div() {
+	return document.createElement('div')
+}
+function link() {
+	return document.createElement('a')
+}
+function checkbox() {
+	var cb = document.createElement('input')
+	cb.type = 'checkbox'
+	return cb
+}
+function text(value) {
+	return document.createTextNode(value)
+}
+function textbox() {
+	var tb = document.createElement('input')
+	tb.type = 'textbox'
+	return tb
+}
+function button() {
+	return document.createElement('button')
+}
+function list() {
+	return document.createElement('ul')
+}
+function item() {
+	return document.createElement('li')
+}
+function br() {
+	return document.createElement('br')
+}
+function row() {
+	return document.createElement('tr')
+}
+function col(x) {
+	let c = document.createElement('td')
+	c.innerHTML = x
+	return c
+}
+
+function stripId(yt) {
+	if (/watch\?v=.+/.test(yt)) {
+		return yt.match(/\?v=([\w\-_]+)/)[1]
+	} else {
+		return yt
+	}
+}
+function linkFromId(id) {
+	if (id) {
+		return 'https://www.youtube.com/watch?v=' + id
+	} else {
+		return '#'
+	}
+}
+
+function addArtist({name = '' ,albums = []}) {
+	var elem = item()
+	elem.setAttribute('class','artist')
+	
+	var header = div()
+	header.setAttribute('class','thing-header')
+	
+	var body = div()
+	body.setAttribute('class','thing-body')
+	
+	var footer = div()
+	footer.setAttribute('class','thing-footer')
+	
+	var check = checkbox()
+	check.setAttribute('class','include')
+	check.setAttribute('checked',true)
+	
+	var nameTextbox = textbox()
+	nameTextbox.setAttribute('class','name')
+	nameTextbox.setAttribute('placeholder','Artist name...')
+	nameTextbox.setAttribute('value',name)
+	
+	var removeBtn = button()
+	removeBtn.setAttribute('class','remove')
+	removeBtn.innerHTML = 'X'
+	removeBtn.onclick = function () {
+		elem.remove()
+	}
+	
+	var collapseBtn = button()
+	collapseBtn.setAttribute('class','collapse')
+	collapseBtn.collapsed = false
+	collapseBtn.innerHTML = '_'
+	collapseBtn.onclick = function () {
+		if (collapseBtn.collapsed) {
+			body.style.maxHeight = '600px'
+			collapseBtn.innerHTML = '_'
+			collapseBtn.collapsed = false
+		} else {
+			body.style.maxHeight = '0px'
+			collapseBtn.innerHTML = '+'
+			collapseBtn.collapsed = true
+		}
+	}
+	
+	header.appendChild(check)
+	header.appendChild(nameTextbox)
+	header.appendChild(removeBtn)
+	header.appendChild(collapseBtn)
+	
+	var albumList = list()
+	albumList.setAttribute('class','albums')
+	for (let a of albums) {
+		albumList.appendChild(addAlbum(a))
+	}
+	
+	var addBtn = button()
+	addBtn.setAttribute('class','add')
+	addBtn.innerHTML = '+Album'
+	addBtn.onclick = function () {
+		albumList.appendChild(addAlbum({}))
+	}
+	
+	//body.appendChild(text('Albums by Artist:'))
+	body.appendChild(albumList)
+	body.appendChild(addBtn)
+	
+	var moveUpBtn = button()
+	moveUpBtn.setAttribute('class','move')
+	moveUpBtn.innerHTML = '‎▲'
+	moveUpBtn.onclick = function () {
+		var sibling = elem.previousSibling
+		if (sibling) {
+			elem.remove()
+			sibling.parentElement.insertBefore(elem,sibling)
+		}
+	}
+	
+	var moveDownBtn = button()
+	moveDownBtn.setAttribute('class','move')
+	moveDownBtn.innerHTML = '▼'
+	moveDownBtn.onclick = function () {
+		var sibling = elem.nextSibling
+		if (sibling) {
+			sibling.remove()
+			elem.parentElement.insertBefore(sibling,elem)
+		}
+	}
+	
+	footer.appendChild(moveUpBtn)
+	footer.appendChild(moveDownBtn)
+	
+	elem.appendChild(header)
+	elem.appendChild(body)
+	elem.appendChild(footer)
+	
+	document.querySelector('.artists').appendChild(elem)
+}
+
+function addAlbum({name = '', songs = []}) {
+	var elem = item()
+	elem.setAttribute('class','album')
+	
+	var header = div()
+	header.setAttribute('class','thing-header')
+	
+	var body = div()
+	body.setAttribute('class','thing-body')
+	
+	var footer = div()
+	footer.setAttribute('class','thing-footer')
+	
+	var check = checkbox()
+	check.setAttribute('class','include')
+	check.setAttribute('checked',true)
+	
+	var nameTextbox = textbox()
+	nameTextbox.setAttribute('class','name')
+	nameTextbox.setAttribute('placeholder','Album name...')
+	nameTextbox.setAttribute('value',name)
+	
+	var removeBtn = button()
+	removeBtn.setAttribute('class','remove')
+	removeBtn.innerHTML = 'X'
+	removeBtn.onclick = function () {
+		elem.remove()
+	}
+	
+	var collapseBtn = button()
+	collapseBtn.setAttribute('class','collapse')
+	collapseBtn.collapsed = false
+	collapseBtn.innerHTML = '_'
+	collapseBtn.onclick = function () {
+		if (collapseBtn.collapsed) {
+			body.style.maxHeight = '600px'
+			collapseBtn.innerHTML = '_'
+			collapseBtn.collapsed = false
+		} else {
+			body.style.maxHeight = '0px'
+			collapseBtn.innerHTML = '+'
+			collapseBtn.collapsed = true
+		}
+	}
+	
+	header.appendChild(check)
+	header.appendChild(nameTextbox)
+	header.appendChild(removeBtn)
+	header.appendChild(collapseBtn)
+	
+	var songList = list()
+	songList.setAttribute('class','songs')
+	for (let s of songs) {
+		songList.appendChild(addSong(s))
+	}
+	
+	var addBtn = button()
+	addBtn.setAttribute('class','add')
+	addBtn.innerHTML = '+Song'
+	addBtn.onclick = function () {
+		songList.appendChild(addSong({}))
+	}
+	
+	//body.appendChild(text('Songs on Album:'))
+	body.appendChild(songList)
+	body.appendChild(addBtn)
+	
+	var moveUpBtn = button()
+	moveUpBtn.setAttribute('class','move')
+	moveUpBtn.innerHTML = '‎▲'
+	moveUpBtn.onclick = function () {
+		var sibling = elem.previousSibling
+		if (sibling) {
+			elem.remove()
+			sibling.parentElement.insertBefore(elem,sibling)
+		}
+	}
+	
+	var moveDownBtn = button()
+	moveDownBtn.setAttribute('class','move')
+	moveDownBtn.innerHTML = '▼'
+	moveDownBtn.onclick = function () {
+		var sibling = elem.nextSibling
+		if (sibling) {
+			sibling.remove()
+			elem.parentElement.insertBefore(sibling,elem)
+		}
+	}
+	
+	footer.appendChild(moveUpBtn)
+	footer.appendChild(moveDownBtn)
+	
+	elem.appendChild(header)
+	elem.appendChild(body)
+	elem.appendChild(footer)
+	
+	return elem
+}
+
+function addSong({name = '', id = ''}) {
+	var elem = item()
+	elem.setAttribute('class','song')
+	
+	var header = div()
+	header.setAttribute('class','thing-header')
+	
+	var body = div()
+	body.setAttribute('class','thing-body-last')
+	
+	var footer = div()
+	footer.setAttribute('class','thing-footer')
+	
+	var check = checkbox()
+	check.setAttribute('class','include')
+	check.setAttribute('checked',true)
+	
+	var nameTextbox = textbox()
+	nameTextbox.setAttribute('class','name')
+	nameTextbox.setAttribute('placeholder','Song name...')
+	nameTextbox.setAttribute('value',name)
+	
+	var removeBtn = button()
+	removeBtn.setAttribute('class','remove')
+	removeBtn.innerHTML = 'X'
+	removeBtn.onclick = function () {
+		elem.remove()
+	}
+	
+	var collapseBtn = button()
+	collapseBtn.setAttribute('class','collapse')
+	collapseBtn.collapsed = false
+	collapseBtn.innerHTML = '_'
+	collapseBtn.onclick = function () {
+		if (collapseBtn.collapsed) {
+			body.style.maxHeight = '60px'
+			collapseBtn.innerHTML = '_'
+			collapseBtn.collapsed = false
+		} else {
+			body.style.maxHeight = '0px'
+			collapseBtn.innerHTML = '+'
+			collapseBtn.collapsed = true
+		}
+	}
+	
+	header.appendChild(check)
+	header.appendChild(nameTextbox)
+	header.appendChild(removeBtn)
+	header.appendChild(collapseBtn)
+	
+	var linkText = link()
+	linkText.setAttribute('class','youtube-link')
+	id = stripId(id)
+	linkText.setAttribute('href',linkFromId(id))
+	linkText.innerHTML = id
+	
+	var linkBtn = button()
+	linkBtn.setAttribute('class','link')
+	linkBtn.innerHTML = 'Link...'
+	linkBtn.onclick = function () {
+		let lnk = prompt('Paste link to YouTube video')
+		if (lnk) {
+			let id = stripId(lnk)
+			linkText.innerHTML = id
+			linkText.href = linkFromId(id)
+		}
+	}
+	
+	body.appendChild(linkBtn)
+	body.appendChild(linkText)
+	
+	var moveUpBtn = button()
+	moveUpBtn.setAttribute('class','move')
+	moveUpBtn.innerHTML = '‎▲'
+	moveUpBtn.onclick = function () {
+		var sibling = elem.previousSibling
+		if (sibling) {
+			elem.remove()
+			sibling.parentElement.insertBefore(elem,sibling)
+		}
+	}
+	
+	var moveDownBtn = button()
+	moveDownBtn.setAttribute('class','move')
+	moveDownBtn.innerHTML = '▼'
+	moveDownBtn.onclick = function () {
+		var sibling = elem.nextSibling
+		if (sibling) {
+			sibling.remove()
+			elem.parentElement.insertBefore(sibling,elem)
+		}
+	}
+	/*
+	var moveToBtn = button()
+	moveToBtn.setAttribute('class','move')
+	moveToBtn.innerHTML = 'Move to...'
+	moveToBtn.onclick = function () {
+		let dest = prompt('Which album to move to?')
+		if (dest) {
+			let albums = elem.parentElement
+			while (albums.className != '.albums') {
+				albums = albums.parentElement
+			}
+			albums = albums.querySelectorAll('.album')
+			for (let al of albums) {
+				if (al.querySelector('.name').value == dest) {
+					elem.remove()
+					dest.querySelector('.songs').appendChild(elem)
+					return
+				}
+			}
+			dest = addAlbum({})
+			elem.remove()
+			dest.querySelector('.songs').appendChild(elem)
+			albums.appendChild(dest)
+		}
+	}
+	*/
+	footer.appendChild(moveUpBtn)
+	footer.appendChild(moveDownBtn)
+	
+	elem.appendChild(header)
+	elem.appendChild(body)
+	elem.appendChild(footer)
+	
+	return elem
+}
+
+function clear() {
+	for (let a of document.querySelectorAll('.artist')) {
+		a.remove()
+	}
+	
+	Playlist = []
+}
+
+function parse(data) {
+	console.log('Parsing data:',data)
+	try {
+		clear()
+		let {Artists,Albums,Songs} = JSON.parse(data)
+		
+		// dereference album songs
+		for (let album of Albums) {
+			album.songs = album.songs.map(s => Songs[s])
+		}
+		// dereference artist albums
+		for (let artist of Artists) {
+			artist.albums = artist.albums.map(a => Albums[a])
+		}
+		// generate interface
+		Artists.forEach(addArtist)
+	} catch (e) {
+		console.log(e)
+	}
+}
+
+function load() {
+	let fileInput = document.createElement('input')
+	fileInput.type = 'file'
+	fileInput.onchange = function (e) {
+		let fr = new FileReader()
+		fr.onload = function (e) {
+			parse(e.target.result)
+		}
+		fr.onerror = function (e) {
+			console.log(e)
+		}
+		fr.readAsText(fileInput.files[0])
+	}
+	fileInput.click()
+}
+
+function save() {
+	let Artists = []
+	let Albums = []
+	let Songs = []
+	
+	let arID = 0
+	let alID = 0
+	let soID = 0
+	
+	for (let artist of document.querySelectorAll('.artist')) {
+		Artists.push({
+			name: artist.querySelector('.name').value,
+			albums: []
+		})
+		for (let album of artist.querySelectorAll('.album')) {
+			Albums.push({
+				name: album.querySelector('.name').value,
+				songs: []
+			})
+			for (let song of album.querySelectorAll('.song')) {
+				Songs.push({
+					name: song.querySelector('.name').value,
+					id: song.querySelector('a').href
+				})
+				Albums[alID].songs.push(soID++)
+			}
+			Artists[arID].albums.push(alID++)
+		}
+		arID++
+	}
+
+	let file = link()
+	file.setAttribute('href','data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify({Artists,Albums,Songs})))
+	file.setAttribute('download','music.json')
+	
+	if (document.createEvent) {
+		var evt = document.createEvent("MouseEvents")
+		evt.initEvent("click",true,true)
+		evt.synthetic = true
+		file.dispatchEvent(evt,true)
+	} else if (file.fireEvent) {
+		var evt = document.createEventObject()
+		evt.synthetic = true
+		file.fireEvent("onclick",evt)
+	} else {
+		file.click()
+	}
+}
+
+function generate() {
+	let artistName
+	let albumName
+	let songName
+	let songId
+	
+	Playlist = []
+	
+	for (let artist of document.querySelectorAll('.artist')) {
+		if (!artist.querySelector('.include').checked) continue 
+		artistName = artist.querySelector('.name').value
+		
+		for (let album of artist.querySelectorAll('.album')) {
+			if (!album.querySelector('.include').checked) continue
+			albumName = album.querySelector('.name').value
+			
+			for (let song of album.querySelectorAll('.song')) {
+				if (!song.querySelector('.include').checked) continue
+				songName = song.querySelector('.name').value
+				songId = song.querySelector('a')
+				if (!songId.href) continue
+				
+				Playlist.push({
+					artist: artistName,
+					album: albumName,
+					song: songName,
+					id: songId.textContent
+				})
+			}
+		}
+	}
+	
+	finalize()
+}
+
+function shuffle() {
+	for (let i = 0, j, temp; i < Playlist.length; i++) {
+		j = ~~(Playlist.length * Math.random())
+		temp = Playlist[i]
+		Playlist[i] = Playlist[j]
+		Playlist[j] = temp
+	}
+	
+	finalize()
+}
+
+function finalize() {
+	if (Playlist.length == 0) return;
+	
+	// copy selected songs
+	let len = Math.min(Math.min(document.querySelector('#length').value,50),Playlist.length)
+	
+	// make playlist URL
+	PlaylistURL = 'https://www.youtube.com/watch_videos?video_ids=' + Playlist.slice(0,len).map(s => s.id).join(',')
+
+	var playlistTbl = document.querySelector('#playlist>tbody')
+	
+	while (playlistTbl.children.length) {
+		playlistTbl.lastChild.remove()
+	}
+	
+	for (let i = 0; i < len; i++) {
+		var r = row()
+		r.appendChild(col(i+1))
+		r.appendChild(col(Playlist[i].song))
+		r.appendChild(col(Playlist[i].album))
+		r.appendChild(col(Playlist[i].artist))
+		playlistTbl.appendChild(r)
+	}
+}
+
+function play() {
+	window.open(PlaylistURL,'_blank')
+}
+
+function copy() {
+	prompt('Copy the following link to your clipboard',PlaylistURL)
+}
+		</script>
+	</head>
+	<body>
+		<center>
+			<h1>YouTube Playlist Generator</h1>
+			<p>Create custom playlists for YouTube whenever you want.<br>
+			1. Load up your favorite artists, albums, and songs.<br>
+			2. Hit Generate to get a preview for your playlist.<br>
+			3. Click play and enjoy!</p>
+			<div>Playlist length: <input id="length" type="number" min="3" max="50" value="50" style="width:40px"></div>
+		</center>
+		<div class="input" style="width:600px;float:left;">
+			<div class="options">
+				<button class="main" onclick="load()" title="Load music data from your desktop">Load</button>
+				<button class="main" onclick="save()" title="Save music data to your desktop">Save</button>
+				<button class="main" onclick="generate()" title="Create a new playlist from the selected items">Generate</button>
+			</div>
+			<ul class="artists">
+			</ul>
+			<button class="add" onclick="addArtist({})">+Artist</button>
+		</div>
+		<div class="output" style="width:600px;float:right;">
+			<div class="options">
+				<button class="main" onclick="play()" title="Listen to the playlist on YouTube">▶️ Play</button>
+				<button class="main" onclick="copy()" title="Copy the playlist link">Copy</button>
+				<button class="main" onclick="shuffle()" title="Shuffle the current playlist">Shuffle</button>
+			</div>
+			<table id="playlist">
+				<thead>
+					<tr>
+						<th style="width:60px">Order</th>
+						<th style="width:180px">Song</th>
+						<th style="width:180px">Album</th>
+						<th style="width:180px">Artist</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="4" style="color:lightgrey;text-align:center;">Press Generate to preview playlist</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<script>addArtist({})</script>
+	</body>
+</html>

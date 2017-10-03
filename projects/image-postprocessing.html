@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" charset="utf-8"/>
+		<style>
+		html {
+			font-family: "Trebuchet MS";
+		}
+		h1, h2, h3 {
+			font-weight: lighter;
+			text-align: center;
+		}
+		#image {
+			border: 4px dashed #ccc;
+			margin: 20px;
+		}
+		#ui {
+			width: 400px;
+			margin: 10px auto 10px auto;
+		}
+		button {
+			font-family: inherit;
+			font-size: 22px;
+			border: 2px outset #ddd;
+			margin: 5px auto;
+			padding: 5px 25px 5px 25px;
+		}
+		</style>
+	</head>
+	<body>
+		<h1>Image Post-Processing</h1>
+		<h3>Start by dropping an image into the box below</h3>
+		<div id="wrapper">
+		<center></center>
+		</div>
+		<div id="ui" style="display:none">
+			<div>
+			Red Multiplier: <input type="range" id="red-mult" min="0" max="10" step="0.1" value="1" oninput="this.nextElementSibling.innerHTML=`${this.value}x`"> <span></span>
+			</div>
+			<div>
+			Green Multiplier: <input type="range" id="green-mult" min="0" max="10" step="0.1" value="1" oninput="this.nextElementSibling.innerHTML=`${this.value}x`"> <span></span>
+			</div>
+			<div>
+			Blue Multiplier: <input type="range" id="blue-mult" min="0" max="10" step="0.1" value="1" oninput="this.nextElementSibling.innerHTML=`${this.value}x`"> <span></span>
+			</div>
+			<div>
+			Resize: <input type="range" id="resize" min="1" max="10" value="1" oninput="this.nextElementSibling.innerHTML=`${this.value}x ->  ${input.canvas.width*this.value} x ${input.canvas.height*this.value}`"> <span></span>
+			</div>
+			<div>
+			Noise Reduction: <input type="range" id="noise-reduce" min="0" max="4" value="1" oninput="this.nextElementSibling.innerHTML=['None','A little','Average','A lot','Max'][this.value]"> <span></span>
+			</div> 
+			<div>
+			Quantize: <input type="range" id="quantize" min="0" max="128" value="0" oninput="this.nextElementSibling.innerHTML=this.value||'No quantization'"> <span></span>
+			</div> 
+			<center><button onclick="render()">Render</button></center>
+		</div>
+		<div id="output" style="display:none">
+			<center><canvas id="image-output" width=0 height=0></canvas></center>
+		</div>
+		<script src="src/js/image-manip.js"></script>
+		<script src="src/js/canvas-dnd.js"></script>
+		<script>
+var ui  = document.querySelector("#ui")
+var result = document.querySelector("#output")
+var input = new CanvasDragAndDrop("image",()=>{ui.style.display="block"})
+var output = result.querySelector("#image-output")
+var outputCtx = output.getContext("2d")
+
+input.canvas.width = 400
+input.canvas.height = 300
+document.querySelector("#wrapper>center").appendChild(input.canvas)
+
+
+function render() {
+	var redMult   = document.querySelector("#red-mult").value,
+	    greenMult = document.querySelector("#green-mult").value,
+		blueMult  = document.querySelector("#blue-mult").value,
+		scale     = document.querySelector("#resize").value,
+	    noise     = document.querySelector("#noise-reduce").value,
+		quantize  = document.querySelector("#quantize").value
+	
+	outputCtx.clearRect(0,0,output.width,output.height)
+	output.width  = input.canvas.width  * scale
+	output.height = input.canvas.height * scale
+	
+	var i = new ImageBuffer(input.canvas,input.context)
+	var o = new ImageBuffer(output,outputCtx)
+	// buffer object for output
+	
+	// fill the output image data with the input image data
+	var ix, iy, ox, oy, pix
+	for (iy=0;iy<i.height;iy++) {
+		for (oy=iy*scale;oy<(iy+1)*scale;oy++) {
+			for (ix=0;ix<i.width;ix++) {
+				pix = i.getPixel(ix,iy)
+				pix.red   = Math.min(~~(pix.red*redMult),255)
+				pix.green = Math.min(~~(pix.green*greenMult),255)
+				pix.blue  = Math.min(~~(pix.blue*blueMult),255)
+				for (ox=ix*scale;ox<(ix+1)*scale;ox++) {
+					o.setPixel(ox,oy,pix.red,pix.green,pix.blue,pix.alpha)
+				}
+			}
+		}
+	}
+	// apply noise filtration and smoothing
+	for (let k=0;k<noise;k++) o.applyGaussianBlur5x5()
+	for (let k=0;k<noise;k++) o.applyUnsharpMasking()
+	if (quantize) o.applyQuantization(quantize)
+	// apply image to output canvas
+	outputCtx.putImageData(o.image,0,0)
+	// show output and scroll to it
+	result.style.display = "block"
+	result.scrollIntoView()
+}
+		</script>
+	</body>
+</html>
